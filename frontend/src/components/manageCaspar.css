@@ -1,0 +1,51 @@
+.caspar-settings-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+  margin-top: 6rem;
+  font-family: sans-serif;
+}
+
+.caspar-section {
+  border: 1px solid #ccc;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.caspar-section h2 {
+  margin-bottom: 1rem;
+  color: black;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  color: black;
+}
+
+.input-group label {
+  width: 80px;
+  font-weight: bold;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+  background-color: #ccc;
+  color: black;
+  border-radius: 5px;
+  border: 1px;
+}
+
+.caspar-button {
+  padding: 0.6rem 1.2rem;
+  font-weight: bold;
+  background-color: #5d00ff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

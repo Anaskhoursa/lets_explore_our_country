@@ -1,0 +1,145 @@
+.manage-game {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  margin-top: 5rem;
+}
+
+.game-controls {
+  display: flex;
+  flex-direction: row;
+  overflow-y: auto;
+  gap: 1rem;
+}
+
+.game-controls button {
+  padding: 0.7rem 1.2rem;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.game-controls button:hover {
+  background-color: #0056b3;
+}
+
+.game-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.realtime-questions {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  flex: 6
+}
+
+.question-buttons {
+  display: flex;
+    flex-wrap: wrap; 
+
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  max-width: calc((40px + 0.8rem) * 20);
+
+}
+
+.circle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background-color: #6c63ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.circle-btn:hover {
+  background-color: #4a43b7;
+}
+
+.question-box {
+  margin-top: 1rem;
+}
+
+.question-text {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.answers-list {
+  list-style: none;
+  padding-left: 0;
+  color: black;
+}
+
+.answer-option {
+  background-color: #f0f0f0;
+  padding: 0.6rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.answer-option:hover {
+  background-color: #e0e0e0;
+}
+
+.realtime-scores {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  flex: 1;
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.score-table th,
+.score-table td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.score-table th {
+  background-color: #007bff;
+  color: white;
+}
+
+.countdown-timer {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ff4d4f;
+  margin-bottom: 1rem;
+}
+
+
+button:disabled {
+  background-color: #aaa;
+  color: #fff;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  opacity: 0.6;
+}

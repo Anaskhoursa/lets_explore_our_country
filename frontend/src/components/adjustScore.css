@@ -1,0 +1,47 @@
+.adjust-score-container {
+  max-width: 800px;
+  margin: auto;
+  margin-top: 6rem;
+  background-color: #fff;
+  border-radius: 2rem;
+  padding: 3rem;
+}
+
+.adjust-score-container h2 {
+    color: black;
+}
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.score-table th,
+.score-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  color: black;
+}
+
+.score-input {
+  padding: 8px;
+  width: 80px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #ccc;
+  color: black;
+}
+
+.update-btn {
+  padding: 8px 12px;
+  background-color: #285ba7;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.update-btn:hover {
+  background-color: #2d72aa;
+}

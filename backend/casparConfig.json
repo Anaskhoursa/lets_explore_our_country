@@ -1,0 +1,42 @@
+{
+  "question": {
+    "channel": "1",
+    "layer": 10,
+    "channel2": "2",
+    "layer2": 10,
+    "path": "quiz",
+    "loop": null
+  },
+  "score": {
+    "channel": 1,
+    "layer": 2,
+    "channel2": "2",
+    "layer2": 10,
+    "path": "score",
+    "loop": null
+  },
+  "background": {
+    "channel": 1,
+    "layer": 1,
+    "channel2": 2,
+    "layer2": 1,
+    "path": "geo",
+    "loop": true
+  },
+  "name": {
+    "channel": 1,
+    "layer": "5",
+    "channel2": 2,
+    "layer2": "5",
+    "path": "name",
+    "loop": true
+  },
+  "logo": {
+    "channel": 1,
+    "layer": "3",
+    "channel2": 2,
+    "layer2": "3",
+    "path": "logo",
+    "loop": true
+  }
+}
