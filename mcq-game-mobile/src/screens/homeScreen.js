@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation }) {
 
 
 
-  const SOCKET_URL = 'http://192.168.0.100:3001';
+  const SOCKET_URL = 'http://192.168.1.8:3001';
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
   const onlineSocketRef = useRef(null);
@@ -117,20 +117,20 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.innerContainer}>
           {!selectedRole ? (
             <>
-              <Text style={styles.title}>اختر دورك</Text>
+              <Text style={styles.title}>Please Choose Your Role </Text>
 
               <View style={styles.roleButtons}>
                 <TouchableOpacity
                   style={styles.roleButton}
                   onPress={() => setSelectedRole('participant')}
                 >
-                  <Text style={styles.roleButtonText}>مشارك</Text>
+                  <Text style={styles.roleButtonText}>Participant</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.roleButton}
                   onPress={() => setSelectedRole('host')}
                 >
-                  <Text style={styles.roleButtonText}>منشط</Text>
+                  <Text style={styles.roleButtonText}>Animator</Text>
                 </TouchableOpacity>
               </View>
             </>
@@ -138,20 +138,20 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.selectionWrapper}>
               <View style={styles.selectionContent}>
                 <Text style={styles.title}>
-                  اختر {selectedRole === 'host' ? 'منشطاً' : 'مشاركاً'}
+                  Choose an {selectedRole === 'host' ? 'Animator' : 'Participant'}
                 </Text>
                 <TouchableOpacity
                   onPress={() => handleRefetch()}
                   style={styles.backButton}
                 >
-                  <Text style={styles.backButtonText}>تحديث</Text>
+                  <Text style={styles.backButtonText}>Refresh</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => setSelectedRole(null)}
                   style={styles.backButton}
                 >
-                  <Text style={styles.backButtonText}>🔙 رجوع</Text>
+                  <Text style={styles.backButtonText}>🔙 Back</Text>
                 </TouchableOpacity>
 
                 {isLoading ? (
@@ -173,10 +173,10 @@ export default function HomeScreen({ navigation }) {
                       >
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                           <Text style={styles.name}>{item.name}</Text>
-                          <Text style={styles.role}>({item.role === 'host' ? 'منشط' : 'مشارك'})</Text>
+                          <Text style={styles.role}>({item.role === 'host' ? 'Animator' : 'Participant'})</Text>
                         </View>
                         {isUserOnline(item.name) && (
-                          <Text style={styles.onlineStatus}>متصل</Text>
+                          <Text style={styles.onlineStatus}>online</Text>
                         )}
                       </TouchableOpacity>
                     )}
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Hacen-Samra',
     textAlign: 'center',
     justifyContent: 'center',
-    width: 100,
+    width: 150,
     height: 40
   },
 });

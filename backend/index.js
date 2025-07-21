@@ -62,7 +62,7 @@ async function ensureMidiPort(desiredPortIndex) {
     return true;
   }
 
-  if (isMidiPortCurrentlyOpen) {
+  if (isMidiPortCurrentlyOpen)  {
     try {
       midiOutput.closePort();
       isMidiPortCurrentlyOpen = false;
@@ -118,7 +118,7 @@ io.on('connection', (socket) => {
     console.log("Connected users:", Object.keys(users).length);
     console.log("Total DB users:", dbUsers.rowCount);
 
-    if (Object.keys(users).length  >= dbUsers.rowCount) {
+    if (Object.keys(users).length -1 >= dbUsers.rowCount) {
       if (callback) callback({ success: true, users: Object.keys(users) });
 
     }
@@ -136,7 +136,7 @@ io.on('connection', (socket) => {
     const totalCount = dbUsers.rowCount;
     console.log("Connected users:", Object.keys(users).length);
     console.log("Total DB users:", dbUsers.rowCount);
-    const allConnected = connectedCount  >= totalCount;
+    const allConnected = connectedCount -1 >= totalCount;
 
     io.emit('users_connected', { success: allConnected });
     io.emit('online-users', Object.keys(users));
@@ -212,6 +212,24 @@ io.on('connection', (socket) => {
     console.log('Received reset', socket.id);
 
     io.emit('stop_game');
+
+
+
+  });
+
+  socket.on('round_time', () => {
+    console.log('Received challenge', socket.id);
+
+    io.emit('round_time');
+
+
+
+  });
+
+  socket.on('between_round_time', () => {
+    console.log('Received between challenge', socket.id);
+
+    io.emit('between_round_time');
 
 
 

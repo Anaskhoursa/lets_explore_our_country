@@ -16,6 +16,10 @@ export const addUser = async (userData) => {
   const res = await api.post('/add-user', userData);
   return res.data.message;
 };
+export const removeAllQuestions = async (userData) => {
+  const res = await api.post('/remove-all-questions', userData);
+  return res.data.message;
+};
 export const updateUser = async (userData) => {
   const res = await api.post('/update-user', userData);
   return res.data.message;

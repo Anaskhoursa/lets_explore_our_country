@@ -19,14 +19,14 @@ exports.GetUsers = async (req, res) => {
 }
 
 exports.addUser = async (req, res) => {
-    const { name, role, midi } = req.body
+    const { name, role, midi, members } = req.body
     try {
         const isExisted = await pool.query('select * from users where name = $1', [name])
         if (isExisted.rows[0]) {
             return res.status(400).json({ message: 'name already exists, choose a different one' })
         }
 
-        await pool.query('INSERT INTO users (name, role, score, midi) VALUES ($1, $2, $3, $4) RETURNING *', [name, role, 0, midi])
+        await pool.query('INSERT INTO users (name, role, score, midi, members) VALUES ($1, $2, $3, $4, $5) RETURNING *', [name, role, 0, midi, members])
         res.status(200).json({ message: 'added' })
 
     } catch (error) {
@@ -42,6 +42,19 @@ exports.addQuestion = async (req, res) => {
 
     try {
         await pool.query('insert into questions (question, answers, ordre) VALUES ($1, $2, $3)', [question, answers, order])
+        res.status(200).json({ message: 'added' })
+
+    } catch (error) {
+
+        res.status(500).json({ message: error.message })
+
+    }
+}
+exports.removeAllQuestions = async (req, res) => {
+
+
+    try {
+        await pool.query('delete from questions')
         res.status(200).json({ message: 'added' })
 
     } catch (error) {
@@ -73,14 +86,14 @@ exports.updateQuestion = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-    const { name, role, id, midi } = req.body
+    const { name, role, id, midi, members } = req.body
     try {
         const isExisted = await pool.query('select * from users where name = $1 and id != $2', [name, id])
         if (isExisted.rows[0]) {
             return res.status(400).json({ message: 'name already exists, choose a different one' })
         }
 
-        await pool.query('update users set name = $1, role = $2, midi = $4 where id = $3', [name, role, id, midi])
+        await pool.query('update users set name = $1, role = $2, midi = $4, members = $5 where id = $3', [name, role, id, midi, members])
         res.status(200).json({ message: 'updated' })
     }
 

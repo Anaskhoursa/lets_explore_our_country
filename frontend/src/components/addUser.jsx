@@ -12,15 +12,17 @@ const AddUser = () => {
     });
     const [isEditing, setIsEditing] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const [numberOfMembers, setNumberOfMembers] = useState(0)
 
 
-    const [formData, setFormData] = useState({ name: '', role: 'participant', midi: '' });
+    const [formData, setFormData] = useState({ name: '', role: 'participant', midi: '', members: [] });
 
     const mutation = useMutation({
         mutationFn: addUser,
         onSuccess: () => {
             queryClient.invalidateQueries(['users']);
-            setFormData({ name: '', role: 'participant', midi: '' });
+            setNumberOfMembers(0)
+            setFormData({ name: '', role: 'participant', midi: '', members: [] });
         },
         onError: (error) => {
 
@@ -31,7 +33,8 @@ const AddUser = () => {
         mutationFn: updateUser,
         onSuccess: () => {
             queryClient.invalidateQueries(['users']);
-            setFormData({ name: '', role: 'participant', midi: '' });
+            setNumberOfMembers(0)
+            setFormData({ name: '', role: 'participant', midi: '', members: [] });
             setIsEditing(false);
             setEditingId(null);
         },
@@ -56,6 +59,24 @@ const AddUser = () => {
         }
     };
 
+    const handleMemberChange = (e, index) => {
+        const newMembers = [...formData.members];
+        newMembers[index] = e.target.value;
+        setFormData((prev) => ({ ...prev, members: newMembers }));
+    };
+    const handleMemberDelete = (e, index) => {
+        const newMembers = [...formData.members];
+        newMembers.splice(index, 1) 
+        
+        setFormData((prev) => ({ ...prev, members: newMembers }));
+        setNumberOfMembers(prev => prev - 1)
+    };
+
+    const addMember = () => {
+        setNumberOfMembers((prev) => prev + 1);
+        setFormData((prev) => ({ ...prev, members: [...prev.members, ''] }));
+    };
+
 
     if (isLoading) return <div className="loading">Loading users...</div>;
 
@@ -70,6 +91,7 @@ const AddUser = () => {
                             <th>Role</th>
                             <th>Score</th>
                             <th>Midi</th>
+                            <th>Members</th>
                             <th>Update</th>
                         </tr>
                     </thead>
@@ -80,9 +102,11 @@ const AddUser = () => {
                                 <td>{user.role}</td>
                                 <td>{user.score}</td>
                                 <td>{user.midi}</td>
+                                <td>{user.members?.length > 0  ? user.members.map((e, index) => index !== user.members.length-1 ? `${e} ,` : `${e}`) : 'no members'}</td>
                                 <td>
                                     <button className='update-btn' onClick={() => {
-                                        setFormData({ name: user.name, role: user.role, midi: user.midi });
+                                        setFormData({ name: user.name, role: user.role, midi: user.midi, members: user.members ? user.members : [] });
+                                        setNumberOfMembers(user.members ? user.members.length : 0)
                                         setIsEditing(true);
                                         setEditingId(user.id);
                                     }}>
@@ -98,7 +122,7 @@ const AddUser = () => {
             </div>
 
             <div className="user-form" style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '12px' }}>
-                <h2 style={{ color: 'black' }}>{!isEditing? 'Add New User' : 'Modify The User'}</h2>
+                <h2 style={{ color: 'black' }}>{!isEditing ? 'Add New User' : 'Modify The User'}</h2>
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"
@@ -123,6 +147,25 @@ const AddUser = () => {
                         required
                         style={{ backgroundColor: '#ccc', color: 'black' }}
                     />
+                    {Array.from({ length: numberOfMembers }).map((_, index) => (
+                        <div key={index}>
+                            <input
+                                type="text"
+                                name={`member-${index}`} 
+                                placeholder={`Enter Member ${index + 1}`}
+                                value={formData.members[index] || ''} 
+                                onChange={(e) => handleMemberChange(e, index)}
+                                required
+                                style={{ backgroundColor: '#ccc', color: 'black', marginBottom: '10px' }}
+                            />
+                            <button type='button' style={{marginLeft: '1.5rem'}} onClick={(e) => handleMemberDelete(e, index)}>D</button>
+                        </div>
+                    ))}
+
+                    <button type="button" disabled={formData.role === 'host'} onClick={addMember}>
+                        Add New Member
+                    </button>
+
 
                     <button type="submit">
                         {isEditing

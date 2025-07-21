@@ -250,7 +250,7 @@ const ManageGame = () => {
 
         const payload = {
             question: question.question,
-            options, 
+            options,
             number: qIndex + 1,
         };
 
@@ -293,7 +293,7 @@ const ManageGame = () => {
 
         const payload = {
             question: question.question,
-            options, 
+            options,
             number: qIndex + 1,
         };
 
@@ -525,24 +525,24 @@ const ManageGame = () => {
     };
 
     const handleResetAll = async () => {
-        if (qIndex !== null) {
-            const response = await resetAll()
-            if (response === 'updated') {
-                await queryClient.refetchQueries(['data']);
 
-                // Get fresh data from cache
-                const newData = queryClient.getQueryData(['data']);
-                console.log('Fresh data:', newData);
+        const response = await resetAll()
+        if (response === 'updated') {
+            await queryClient.refetchQueries(['data']);
 
-                setLiveUsers(newData.users);
-                setUserAnswers(transformUserData(newData.users));
+            // Get fresh data from cache
+            const newData = queryClient.getQueryData(['data']);
+            console.log('Fresh data:', newData);
 
-            } else {
-                console.error('Vote failed:', response?.error);
-            }
-            ;
+            setLiveUsers(newData.users);
+            setUserAnswers(transformUserData(newData.users));
 
+        } else {
+            console.error('Vote failed:', response?.error);
         }
+        ;
+
+
     };
 
     useEffect(() => {
@@ -618,14 +618,18 @@ const ManageGame = () => {
 
                 {/* <button onClick={() => handleReturnClick('return_question')} disabled={!buttonsEnabled || qIndex === null}>Return</button> */}
                 <button onClick={() => handleStopClick('stop_game')} disabled={qIndex === null}>Stop</button>
+                <button onClick={() => socket.emit('round_time')} disabled={qIndex === null}>Round</button>
+                <button onClick={() => socket.emit('between_round_time')} disabled={qIndex === null}>Challenge</button>
+
+
                 {qIndex !== null && !questionVisible && (
-                    <button onClick={() => {handleShowStats(); handleShowStats2(); setquestionVisible(true)}} >
+                    <button onClick={() => { handleShowStats(); handleShowStats2(); setquestionVisible(true) }} >
                         Show Question
                     </button>
 
                 )}
-                {qIndex !== null && questionVisible &&(
-                    <button onClick={() => {stopQ(); stopQ2(); setquestionVisible(false)}} >
+                {qIndex !== null && questionVisible && (
+                    <button onClick={() => { stopQ(); stopQ2(); setquestionVisible(false) }} >
                         Hide Question
                     </button>
 
@@ -636,8 +640,8 @@ const ManageGame = () => {
                     </button>
 
                 )} */}
-                {qIndex !== null && !questionVisible &&(
-                    <button onClick={() => {handleShowCorrect(); handleShowCorrect2(); setquestionVisible(true)}} >
+                {qIndex !== null && !questionVisible && (
+                    <button onClick={() => { handleShowCorrect(); handleShowCorrect2(); setquestionVisible(true) }} >
                         Show Answer
                     </button>
 
@@ -648,14 +652,14 @@ const ManageGame = () => {
                     </button>
 
                 )} */}
-                {qIndex !== null && !scoreVisible &&(
-                    <button onClick={() => {handleShowScore(); handleShowScore2(); setscoreVisible(true)}} >
+                {qIndex !== null && !scoreVisible && (
+                    <button onClick={() => { handleShowScore(); handleShowScore2(); setscoreVisible(true) }} >
                         Show Score
                     </button>
 
                 )}
-                {qIndex !== null && scoreVisible &&(
-                    <button onClick={() => {stopScore(); stopScore2(); setscoreVisible(false)}} >
+                {qIndex !== null && scoreVisible && (
+                    <button onClick={() => { stopScore(); stopScore2(); setscoreVisible(false) }} >
                         Hide Score
                     </button>
 
@@ -666,10 +670,10 @@ const ManageGame = () => {
                     </button>
 
                 )} */}
-                {!backgroundVisible && <button onClick={() => {showBackground(); showBackground2(); setbackgroundVisible(true)}} >
+                {!backgroundVisible && <button onClick={() => { showBackground(); showBackground2(); setbackgroundVisible(true) }} >
                     Show Background
                 </button>}
-                {backgroundVisible && <button onClick={() => {stopBackground(); stopBackground2(); setbackgroundVisible(false)}} >
+                {backgroundVisible && <button onClick={() => { stopBackground(); stopBackground2(); setbackgroundVisible(false) }} >
                     Hide Background
                 </button>}
 
@@ -677,30 +681,30 @@ const ManageGame = () => {
                     Show Background 2
                 </button> */}
 
-                
-                
+
+
                 {/* {qIndex !== null && (
                     <button onClick={() => stopQ2()} >
                         Hide Question 2
                     </button>
 
                 )} */}
-                
+
                 {/* {qIndex !== null && (
                     <button onClick={() => stopScore2()} >
                         Hide Score 2
                     </button>
 
                 )} */}
-                
+
                 {/* <button onClick={() => stopBackground2()} >
                     Hide Background 2
                 </button> */}
 
-                {!logoVisible && <button onClick={() => {playLogo(); setlogoVisible(true)}} >
+                {!logoVisible && <button onClick={() => { playLogo(); setlogoVisible(true) }} >
                     Show Logo
                 </button>}
-                {logoVisible && <button onClick={() => {stopLogo(); setlogoVisible(false)}} >
+                {logoVisible && <button onClick={() => { stopLogo(); setlogoVisible(false) }} >
                     Hide Logo
                 </button>}
 

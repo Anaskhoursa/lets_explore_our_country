@@ -19,6 +19,11 @@ const GameScreen = ({ navigation }) => {
   const { socket } = useSocketStore();
   const [answer, setAnswer] = useState(null);
   const [name, setName] = useState("");
+  const [isRound, setIsRound] = useState(false);
+
+  const [isChallenge, setIsChallenge] = useState(false);
+
+
   const gameStoppedRef = useRef(false);
 
   const answerRef = useRef(answer);
@@ -59,61 +64,83 @@ const GameScreen = ({ navigation }) => {
     return () => clearTimeout(timeoutRef.current);
   }, []);
 
+  // Tick the timer by reducing it every second
+  useEffect(() => {
+    if (timeLeft <= 0 || qIndex === null || gameStoppedRef.current) return;
+
+    timeoutRef.current = setTimeout(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 900);
+
+    return () => clearTimeout(timeoutRef.current);
+  }, [timeLeft, qIndex]);
+
+  useEffect(() => {
+    if (timeLeft === 0 && !gameStoppedRef.current && !hasSubmittedRef.current && socket && nameRef.current) {
+      if (answerRef.current) {
+        console.log('save_answer', nameRef.current);
+        socket.emit("save_answer", {
+          userId: nameRef.current,
+          answer: answerRef.current
+        });
+      } else {
+        console.log('save_empty', nameRef.current);
+        socket.emit("save_empty_answer", {
+          userId: nameRef.current,
+          questionId: currentQuestionIdRef.current,
+        });
+      }
+      hasSubmittedRef.current = true;
+    }
+  }, [timeLeft]);
+
   const startTimer = () => {
     clearTimeout(timeoutRef.current);
-    timeoutRef.current =null
+    timeoutRef.current = null;
     setTimeLeft(20);
-
-    const tick = () => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          if (!gameStoppedRef.current && !hasSubmittedRef.current && socket && nameRef.current) {
-            if (answerRef.current) {
-              console.log('save_answer', nameRef.current)
-              socket.emit("save_answer", {
-                userId: nameRef.current,
-                answer: answerRef.current
-              });
-            } else {
-              console.log('save_empty', nameRef.current)
-              socket.emit("save_empty_answer", {
-                userId: nameRef.current,
-                questionId: currentQuestionIdRef.current,
-              });
-            }
-            hasSubmittedRef.current = true;
-          }
-
-          stopTimer();
-          return 0;
-        }
-        timeoutRef.current = setTimeout(tick, 1000);
-        return prev - 1;
-      });
-    };
-
-    timeoutRef.current = setTimeout(tick, 1000);
   };
+
+
+
 
   const stopTimer = useCallback(() => {
     clearTimeout(timeoutRef.current);
     timeoutRef.current = null;
   }, []);
 
-  useEffect(() => {
-    if (!data || qIndex >= data.length || qIndex === null) return;
-    startTimer();
-    return () => clearTimeout(timeoutRef.current);
-  }, [qIndex, data]);
+  // useEffect(() => {
+  //   if (!data || qIndex >= data.length || qIndex === null) return;
+  //   startTimer();
+  //   return () => clearTimeout(timeoutRef.current);
+  // }, [qIndex, data]);
 
   useEffect(() => {
     if (!socket) return;
     const handler = (qIndex) => {
       gameStoppedRef.current = false;
       setQIndex(qIndex);
+      startTimer()
     };
     socket.on('start_game', handler);
     return () => socket.off('start_game', handler);
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+    const handler = () => {
+      setIsRound(true)
+    };
+    socket.on('round_time', handler);
+    return () => socket.off('round_time', handler);
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+    const handler = () => {
+      setIsChallenge(true)
+    };
+    socket.on('between_round_time', handler);
+    return () => socket.off('between_round_time', handler);
   }, [socket]);
 
   useEffect(() => {
@@ -122,8 +149,10 @@ const GameScreen = ({ navigation }) => {
     const nextQuestionHandler = () => {
       stopTimer();
       setAnswer(null);
+      setIsChallenge(false)
+      setIsRound(false)
       setQIndex(prev => prev + 1);
-      setTimeLeft(20);
+      startTimer()
     };
 
     const resetHandler = () => {
@@ -189,6 +218,15 @@ const GameScreen = ({ navigation }) => {
     );
   }
 
+  if (isRound || isChallenge) {
+    return (
+      <LinearGradient colors={['#00C6FF', '#FBD72B']} style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        <Text style={styles.pretitle}> وقت التحدي</Text>
+      </LinearGradient>
+    );
+  }
+
   if (qIndex >= data.length) {
     return (
       <LinearGradient colors={['#00C6FF', '#FBD72B']} style={styles.container}>
@@ -206,12 +244,12 @@ const GameScreen = ({ navigation }) => {
           <Text style={styles.pretitle}>جاري التحميل...</Text>
         ) : (
           <View style={{ alignItems: 'center', justifyContent: 'center', gap: 20 }}>
-            <Text style={styles.pretitle}>مرحباً {name} {'\n'} يرجى انتظار بدء المنسق للعبة</Text>
+            <Text style={styles.pretitle}>Hi {name}, {'\n'} Please Wait for the admin to start the game</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('Home')}
               style={styles.backButton}
             >
-              <Text style={styles.backButtonText}>🔙 رجوع</Text>
+              <Text style={styles.backButtonText}>🔙 back</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -234,7 +272,7 @@ const GameScreen = ({ navigation }) => {
         </View>
 
         <Text style={styles.questionNumber}>
-          السؤال رقم {qIndex !== null ? qIndex + 1 : ''} نكتاشفو بلادنا
+          Question Number {qIndex !== null ? qIndex + 1 : ''}
         </Text>
 
       </View>

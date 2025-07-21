@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://192.168.0.100:5000/api',
+  baseURL: 'http://192.168.1.8:5000/api',
 });
 
 export const getUsers = () => API.get('/get-users').then(res => res.data.message);
