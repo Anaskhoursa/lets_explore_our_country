@@ -14,6 +14,7 @@ function Navbar() {
         <Link to="/manage-game" className="nav-button">Manage the game</Link>
         <Link to="/manage-midi" className="nav-button">Manage Midi</Link>
         <Link to="/manage-caspar" className="nav-button">Manage Caspar</Link>
+        <Link to="/manage-com" className="nav-button">Manage COM</Link>
 
 
       </div>

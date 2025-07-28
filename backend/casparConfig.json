@@ -38,5 +38,21 @@
     "layer2": "3",
     "path": "logo",
     "loop": true
+  },
+  "roundTimer": {
+    "channel": 1,
+    "layer": "10",
+    "channel2": 2,
+    "layer2": "10",
+    "path": "40sec",
+    "loop": true
+  },
+  "vs": {
+    "channel": 1,
+    "layer": "10",
+    "channel2": 2,
+    "layer2": "10",
+    "path": "VS",
+    "loop": true
   }
 }

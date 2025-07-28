@@ -1,5 +1,6 @@
-const { playStats, updateCasparConfig, getCasparConfig, playScore, playBackground, stopScore, stopStats, stopBackground, playStats2, playScore2, playBackground2, stopStats2, stopScore2, stopBackground2, playCorrectOption, playCorrectOption2, playName, StopName, playLogo, stopLogo } = require('../controllers/casparCGController')
-const { GetUsers, addUser, addQuestion, getQuestions, adjustScore, removeUser, removeQuestion, updateQuestion, updateUser, getMidiPorts, setMidiOutputPort, resetAll, removeAllQuestions } = require('../controllers/controllers')
+const { playStats, updateCasparConfig, getCasparConfig, playScore, playBackground, stopScore, stopStats, stopBackground, playStats2, playScore2, playBackground2, stopStats2, stopScore2, stopBackground2, playCorrectOption, playCorrectOption2, playName, StopName, playLogo, stopLogo, play40Sec, stop40Sec, playVS, StopVS } = require('../controllers/casparCGController')
+const { getComPorts, setComPorts, setComTime } = require('../controllers/comController')
+const { GetUsers, addUser, addQuestion, getQuestions, adjustScore, removeUser, removeQuestion, updateQuestion, updateUser, getMidiPorts, setMidiOutputPort, resetAll, removeAllQuestions, incrementScore } = require('../controllers/controllers')
 
 const router = require('express').Router()
 
@@ -14,6 +15,8 @@ router.post('/update-question', updateQuestion)
 
 router.get('/get-questions', getQuestions)
 router.post('/adjust-score', adjustScore)
+router.post('/increment-score', incrementScore)
+
 router.post('/remove-user', removeUser)
 router.post('/remove-question', removeQuestion)
 router.get('/get-midi-ports', getMidiPorts)
@@ -43,10 +46,20 @@ router.post('/play-name', playName)
 router.post('/stop-name', StopName)
 router.post('/play-logo', playLogo)
 router.post('/stop-logo', stopLogo)
+router.post('/play-40', play40Sec)
+router.post('/stop-40', stop40Sec)
+
+router.post('/play-vs', playVS)
+router.post('/stop-vs', StopVS)
 
 router.post('/modify-caspar', updateCasparConfig)
 router.get('/get-caspar', getCasparConfig)
 router.get('/reset-all', resetAll)
+
+router.get('/get-com', getComPorts)
+router.post('/set-com', setComPorts)
+router.post('/set-time', setComTime)
+
 
 
 

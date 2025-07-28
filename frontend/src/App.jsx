@@ -9,6 +9,7 @@ import React from 'react';
 import ManageMidi from './components/manageMidi.jsx';
 import ManageCasparSettings from './components/manageCaspar.jsx';
 import { GameProvider } from './components/gameManage.jsx';
+import ComPortSelector from './components/comSelector.jsx';
 
 
 
@@ -25,6 +26,8 @@ function App() {
           <Route path="/manage-game" element={<ManageGame />} />
           <Route path="/manage-midi" element={<ManageMidi />} />
           <Route path="/manage-caspar" element={<ManageCasparSettings />} />
+          <Route path="/manage-com" element={<ComPortSelector />} />
+
 
 
 

@@ -58,6 +58,11 @@ export const adjustScore = async (userData) => {
   return res.data.message;
 };
 
+export const incrementScore = async (userData) => {
+  const res = await api.post('/increment-score', userData);
+  return res.data.message;
+};
+
 export const removeUser = async (userData) => {
   const res = await api.post('/remove-user', userData);
   return res.data.message;
@@ -167,8 +172,43 @@ export const stopLogo = async (userData) => {
   const res = await api.post('/stop-logo', userData);
   return res.data.message;
 };
+
+export const play40sec = async (userData) => {
+  const res = await api.post('/play-40', userData);
+  return res.data.message;
+};
+
+export const stop40sec = async (userData) => {
+  const res = await api.post('/stop-40', userData);
+  return res.data.message;
+};
+
+export const playVS = async (userData) => {
+  const res = await api.post('/play-vs', userData);
+  return res.data.message;
+};
+
+export const stopVS = async (userData) => {
+  const res = await api.post('/stop-vs', userData);
+  return res.data.message;
+};
+
 export const resetAll = async () => {
   const res = await api.get('/reset-all');
   return res.data.message;
 };
 
+export const getCom = async () => {
+  const res = await api.get('/get-com');
+  return res.data.message;
+};
+
+export const setCom = async (userData) => {
+  const res = await api.post('/set-com', userData);
+  return res.data.message;
+};
+
+export const setTime = async (userData) => {
+  const res = await api.post('/set-time', userData);
+  return res.data.message;
+};

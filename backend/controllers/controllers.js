@@ -19,14 +19,14 @@ exports.GetUsers = async (req, res) => {
 }
 
 exports.addUser = async (req, res) => {
-    const { name, role, midi, members } = req.body
+    const { name, role, midi, members, com } = req.body
     try {
         const isExisted = await pool.query('select * from users where name = $1', [name])
         if (isExisted.rows[0]) {
             return res.status(400).json({ message: 'name already exists, choose a different one' })
         }
 
-        await pool.query('INSERT INTO users (name, role, score, midi, members) VALUES ($1, $2, $3, $4, $5) RETURNING *', [name, role, 0, midi, members])
+        await pool.query('INSERT INTO users (name, role, score, midi, members, com) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [name, role, 0, midi, members, com])
         res.status(200).json({ message: 'added' })
 
     } catch (error) {
@@ -86,14 +86,14 @@ exports.updateQuestion = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-    const { name, role, id, midi, members } = req.body
+    const { name, role, id, midi, members, com } = req.body
     try {
         const isExisted = await pool.query('select * from users where name = $1 and id != $2', [name, id])
         if (isExisted.rows[0]) {
             return res.status(400).json({ message: 'name already exists, choose a different one' })
         }
 
-        await pool.query('update users set name = $1, role = $2, midi = $4, members = $5 where id = $3', [name, role, id, midi, members])
+        await pool.query('update users set name = $1, role = $2, midi = $4, members = $5, com = $6 where id = $3', [name, role, id, midi, members, com])
         res.status(200).json({ message: 'updated' })
     }
 
@@ -118,6 +118,17 @@ exports.adjustScore = async (req, res) => {
     const { id, newScore } = req.body
     try {
         await pool.query('update users set score = $1 where id = $2', [newScore, id])
+        res.status(200).json({ message: 'updated' })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+
+}
+
+exports.incrementScore = async (req, res) => {
+    const { id } = req.body
+    try {
+        await pool.query('update users set score = score + 1 where id = $1', [id])
         res.status(200).json({ message: 'updated' })
     } catch (error) {
         res.status(500).json({ message: error.message })

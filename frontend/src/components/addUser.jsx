@@ -15,14 +15,14 @@ const AddUser = () => {
     const [numberOfMembers, setNumberOfMembers] = useState(0)
 
 
-    const [formData, setFormData] = useState({ name: '', role: 'participant', midi: '', members: [] });
+    const [formData, setFormData] = useState({ name: '', role: 'participant', midi: '', members: [], com:'' });
 
     const mutation = useMutation({
         mutationFn: addUser,
         onSuccess: () => {
             queryClient.invalidateQueries(['users']);
             setNumberOfMembers(0)
-            setFormData({ name: '', role: 'participant', midi: '', members: [] });
+            setFormData({ name: '', role: 'participant', midi: '', members: [], com:'' });
         },
         onError: (error) => {
 
@@ -34,7 +34,7 @@ const AddUser = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(['users']);
             setNumberOfMembers(0)
-            setFormData({ name: '', role: 'participant', midi: '', members: [] });
+            setFormData({ name: '', role: 'participant', midi: '', members: [], com: '' });
             setIsEditing(false);
             setEditingId(null);
         },
@@ -66,8 +66,8 @@ const AddUser = () => {
     };
     const handleMemberDelete = (e, index) => {
         const newMembers = [...formData.members];
-        newMembers.splice(index, 1) 
-        
+        newMembers.splice(index, 1)
+
         setFormData((prev) => ({ ...prev, members: newMembers }));
         setNumberOfMembers(prev => prev - 1)
     };
@@ -91,6 +91,8 @@ const AddUser = () => {
                             <th>Role</th>
                             <th>Score</th>
                             <th>Midi</th>
+                            <th>COM</th>
+
                             <th>Members</th>
                             <th>Update</th>
                         </tr>
@@ -102,7 +104,9 @@ const AddUser = () => {
                                 <td>{user.role}</td>
                                 <td>{user.score}</td>
                                 <td>{user.midi}</td>
-                                <td>{user.members?.length > 0  ? user.members.map((e, index) => index !== user.members.length-1 ? `${e} ,` : `${e}`) : 'no members'}</td>
+                                <td>{user.com}</td>
+
+                                <td>{user.members?.length > 0 ? user.members.map((e, index) => index !== user.members.length - 1 ? `${e} ,` : `${e}`) : 'no members'}</td>
                                 <td>
                                     <button className='update-btn' onClick={() => {
                                         setFormData({ name: user.name, role: user.role, midi: user.midi, members: user.members ? user.members : [] });
@@ -147,18 +151,27 @@ const AddUser = () => {
                         required
                         style={{ backgroundColor: '#ccc', color: 'black' }}
                     />
+                    <input
+                        type="text"
+                        name="com"
+                        placeholder="Enter COM port"
+                        value={formData.com}
+                        onChange={handleChange}
+                        required
+                        style={{ backgroundColor: '#ccc', color: 'black' }}
+                    />
                     {Array.from({ length: numberOfMembers }).map((_, index) => (
                         <div key={index}>
                             <input
                                 type="text"
-                                name={`member-${index}`} 
+                                name={`member-${index}`}
                                 placeholder={`Enter Member ${index + 1}`}
-                                value={formData.members[index] || ''} 
+                                value={formData.members[index] || ''}
                                 onChange={(e) => handleMemberChange(e, index)}
                                 required
                                 style={{ backgroundColor: '#ccc', color: 'black', marginBottom: '10px' }}
                             />
-                            <button type='button' style={{marginLeft: '1.5rem'}} onClick={(e) => handleMemberDelete(e, index)}>D</button>
+                            <button type='button' style={{ marginLeft: '1.5rem' }} onClick={(e) => handleMemberDelete(e, index)}>D</button>
                         </div>
                     ))}
 

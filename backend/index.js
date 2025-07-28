@@ -7,8 +7,13 @@ const { Server } = require('socket.io');
 const pool = require('./pg');
 const { stringify } = require('querystring');
 const midi = require('midi');
-const fs = require('fs').promises;
+const fs = require('fs');
 const path = require('path');
+
+const { SerialPort, SerialPortStream } = require('serialport');
+const { time } = require('console');
+
+
 
 
 const corsOptions = {
@@ -44,11 +49,47 @@ let currentMidiPortIndex = -1;
 let isMidiPortCurrentlyOpen = false;
 const CONFIG_FILE_PATH = path.join(__dirname, 'midiConfig.json');
 
+// const configPath = path.join(__dirname, 'comConfig.json');
+// let config;
+
+
+
+// try {
+//   const raw = fs.readFileSync(configPath, 'utf-8');
+//   config = JSON.parse(raw);
+// } catch (err) {
+//   console.error('Failed to read comConfig.json:', err.message);
+//   process.exit(1);
+// }
+
+// if (!config.port) {
+//   console.error('No port specified in comconfig.json');
+//   process.exit(1);
+// }
+
+// const port = new SerialPort({
+//   path: config.port,
+//   baudRate: 9600,
+// });
+
+// port.on('open', () => {
+//   console.log(`Serial port ${config.port} open`);
+// });
+
+// port.on('data', (data) => {
+//   const value = data.toString().trim();
+//   console.log(`Buzzer pressed: ${value}`);
+
+//   // test
+// });
+
+
+
 
 
 async function getDesiredMidiPortIndex() {
   try {
-    const data = await fs.readFile(CONFIG_FILE_PATH, 'utf8');
+    const data = await fs.readFileSync(CONFIG_FILE_PATH, 'utf8');
     const config = JSON.parse(data);
     return config.outputPortIndex;
   } catch (error) {
@@ -62,7 +103,7 @@ async function ensureMidiPort(desiredPortIndex) {
     return true;
   }
 
-  if (isMidiPortCurrentlyOpen)  {
+  if (isMidiPortCurrentlyOpen) {
     try {
       midiOutput.closePort();
       isMidiPortCurrentlyOpen = false;
@@ -99,6 +140,75 @@ process.on('exit', () => {
   }
 });
 
+(async () => {
+  try {
+    const ports = await SerialPort.list();
+    const timedata = await fs.readFileSync(path.join(__dirname, 'comTime.json'), 'utf8');
+    const timeconfig = JSON.parse(timedata).time;
+    const portsdata = await fs.readFileSync(path.join(__dirname, 'comConfig.json'), 'utf8');
+    const portsconfig = JSON.parse(portsdata);
+    let lastTime = 0;
+
+    if (!ports.length) {
+      console.log('No COM ports found.');
+      return;
+    }
+
+    ports.forEach((portInfo) => {
+      const port = new SerialPort({
+        path: portInfo.path,
+        baudRate: 9600,
+        autoOpen: true,
+      });
+
+      port.on('open', () => {
+        console.log(`Serial port ${portInfo.path} opened`);
+      });
+
+      port.on('data', async (data) => {
+        const value = data.toString().trim();
+        const now = Date.now();
+        const midi = portsconfig.filter(p => p.port === portInfo.path)[0].midi
+
+        if (now - lastTime > timeconfig) {
+          console.log(`Buzzer triggered: ${value}`);
+          lastBuzzer = value;
+          lastTime = now;
+
+          const desiredPortIndex = await getDesiredMidiPortIndex();
+          const portManagedSuccessfully = await ensureMidiPort(desiredPortIndex);
+
+          if (portManagedSuccessfully) {
+            const velocity = 100;
+            const duration = 500;
+
+            midiOutput.sendMessage([0x90, midi, velocity]);
+            console.log(`Sending MIDI Note ON: ${midi} for user ${userId} on port ${currentMidiPortIndex}`);
+
+            setTimeout(() => {
+
+              if (isMidiPortCurrentlyOpen && currentMidiPortIndex === desiredPortIndex) {
+                midiOutput.sendMessage([0x80, midi, velocity]);
+                console.log(`Sending MIDI Note OFF: ${midi} on port ${currentMidiPortIndex}`);
+              } else {
+                console.log(`MIDI port changed or closed (${currentMidiPortIndex} vs desired ${desiredPortIndex}), skipping Note OFF for ${newMidiNoteToStore}.`);
+              }
+            }, duration);
+          } else {
+            console.warn(`MIDI output not available or port could not be opened/managed. Cannot send note ${midi}.`);
+          }
+        }
+      });
+
+      port.on('error', (err) => {
+        console.error(`Error on ${portInfo.path}:`, err.message);
+      });
+    });
+  } catch (err) {
+    console.error('Error listing or opening ports:', err);
+  }
+})();
+
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
@@ -118,7 +228,7 @@ io.on('connection', (socket) => {
     console.log("Connected users:", Object.keys(users).length);
     console.log("Total DB users:", dbUsers.rowCount);
 
-    if (Object.keys(users).length -1 >= dbUsers.rowCount) {
+    if (Object.keys(users).length - 1 >= dbUsers.rowCount) {
       if (callback) callback({ success: true, users: Object.keys(users) });
 
     }
@@ -136,7 +246,7 @@ io.on('connection', (socket) => {
     const totalCount = dbUsers.rowCount;
     console.log("Connected users:", Object.keys(users).length);
     console.log("Total DB users:", dbUsers.rowCount);
-    const allConnected = connectedCount -1 >= totalCount;
+    const allConnected = connectedCount - 1 >= totalCount;
 
     io.emit('users_connected', { success: allConnected });
     io.emit('online-users', Object.keys(users));

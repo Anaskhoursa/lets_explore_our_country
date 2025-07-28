@@ -178,6 +178,75 @@ const StopName = async (req, res) => {
         res.status(500).json({ success: false, error: err.toString() });
     }
 };
+
+const playVS = async (req, res) => {
+    try {
+        await connectToCaspar();
+        const config = loadConfig();
+
+
+        const { name1, name2 } = req.body;
+        const channel = config.vs.channel;
+        const layer = config.vs.layer;
+        const channel2 = config.vs.channel2;
+        const layer2 = config.vs.layer2;
+        const templateName = config.vs.path;
+
+        const dataObj = {
+            name1: sanitizeText(name1),
+            name2: sanitizeText(name2)
+
+        };
+        let casparData = JSON.stringify(dataObj);
+        casparData = escapeCasparJSON(casparData);
+
+
+        await sendCommand(`STOP ${channel2}-${layer2}`);
+
+        await sendCommand(`CG ${channel}-${layer} STOP`);
+
+        const command = `CG ${channel}-${layer} ADD 1 "${templateName}" 1 "${casparData}"`;
+        const command2 = `CG ${channel2}-${layer2} ADD 1 "${templateName}" 1 "${casparData}"`;
+
+        await sendCommand(command);
+        await sendCommand(command2);
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('playStats error:', err);
+        res.status(500).json({ success: false, error: err.toString() });
+    }
+};
+
+const StopVS = async (req, res) => {
+    try {
+        await connectToCaspar();
+        const config = loadConfig();
+
+
+        const channel = config.vs.channel;
+        const layer = config.vs.layer;
+        const channel2 = config.vs.channel2;
+        const layer2 = config.vs.layer2;
+        const templateName = config.vs.path;
+
+
+
+
+        await sendCommand(`STOP ${channel2}-${layer2}`);
+
+        await sendCommand(`STOP ${channel}-${layer}`);
+
+        // const command = `CG ${channel}-${layer} ADD 1 "${templateName}" 1 "${casparData}"`;
+        // const command2 = `CG ${channel2}-${layer2} ADD 1 "${templateName}" 1 "${casparData}"`;
+
+        // await sendCommand(command);
+        // await sendCommand(command2);
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('playStats error:', err);
+        res.status(500).json({ success: false, error: err.toString() });
+    }
+};
 const playStats = async (req, res) => {
     try {
         await connectToCaspar();
@@ -206,7 +275,7 @@ const playStats = async (req, res) => {
         await sendCommand(`STOP ${channel2}-${layer2}`);
 
         await sendCommand(`CG ${channel}-${layer} STOP`);
-
+        console.log(`CG ${channel}-${layer} ADD 1 "${templateName}" 1 "${casparData}"`)
         const command = `CG ${channel}-${layer} ADD 1 "${templateName}" 1 "${casparData}"`;
         await sendCommand(command);
 
@@ -764,6 +833,86 @@ const stopLogo = async (req, res) => {
     }
 };
 
+const play40Sec = async (req, res) => {
+    try {
+        await connectToCaspar();
+        const config = loadConfig();
 
 
-module.exports = { connectToCaspar, playName, StopName, playLogo, stopLogo,playStats, getCasparConfig, updateCasparConfig, playScore, playBackground, playCorrectOption, playCorrectOption2, stopBackground, stopScore, stopStats, playStats2, playScore2, playBackground2, stopBackground2, stopScore2, stopStats2 };
+        const channel = config.roundTimer.channel;
+        const layer = config.roundTimer.layer;
+        const channel2 = config.roundTimer.channel2;
+        const layer2 = config.roundTimer.layer2;
+        const templateName = config.roundTimer.path;
+
+        // const dataObj = {
+        //     question: sanitizeText(question),
+        //     options: options.map(opt => ({
+        //         text: sanitizeText(opt.text),
+        //         isCorrect: opt.isCorrect
+        //     }))
+        // };
+        // let casparData = JSON.stringify(dataObj);
+        // casparData = escapeCasparJSON(casparData);
+
+
+        await sendCommand(`STOP ${channel2}-${layer2}`);
+
+        await sendCommand(`STOP ${channel}-${layer}`);
+
+        const command = `PLAY ${channel}-${layer} "${templateName}" 1`;
+        const command2 = `PLAY ${channel2}-${layer2} "${templateName}" 1`;
+
+        await sendCommand(command);
+        await sendCommand(command2);
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('playStats error:', err);
+        res.status(500).json({ success: false, error: err.toString() });
+    }
+};
+
+const stop40Sec = async (req, res) => {
+    try {
+        await connectToCaspar();
+        const config = loadConfig();
+
+
+        const channel = config.roundTimer.channel;
+        const layer = config.roundTimer.layer;
+        const channel2 = config.roundTimer.channel2;
+        const layer2 = config.roundTimer.layer2;
+        const templateName = config.roundTimer.path;
+
+        // const dataObj = {
+        //     question: sanitizeText(question),
+        //     options: options.map(opt => ({
+        //         text: sanitizeText(opt.text),
+        //         isCorrect: opt.isCorrect
+        //     }))
+        // };
+        // let casparData = JSON.stringify(dataObj);
+        // casparData = escapeCasparJSON(casparData);
+
+
+        await sendCommand(`STOP ${channel2}-${layer2}`);
+
+        await sendCommand(`STOP ${channel}-${layer}`);
+
+        // const command = `PLAY ${channel}-${layer} "${templateName}" 1`;
+        // const command2 = `PLAY ${channel2}-${layer2} "${templateName}" 1`;
+
+        // await sendCommand(command);
+        // await sendCommand(command2);
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('playStats error:', err);
+        res.status(500).json({ success: false, error: err.toString() });
+    }
+};
+
+
+
+module.exports = { connectToCaspar, playName, StopName, playVS, StopVS, playLogo, stopLogo, playStats, getCasparConfig, updateCasparConfig, playScore, playBackground, playCorrectOption, playCorrectOption2, stopBackground, stopScore, stopStats, playStats2, playScore2, playBackground2, stopBackground2, stopScore2, stopStats2, play40Sec, stop40Sec };

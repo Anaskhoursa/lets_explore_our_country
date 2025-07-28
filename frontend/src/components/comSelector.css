@@ -1,0 +1,57 @@
+.com-container {
+  max-width: 500px;
+  margin: 6rem auto;
+  padding: 2rem;
+  background-color: #f5f5fa;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+.com-container h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.port-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.port-item label {
+  flex: 1;
+  font-weight: bold;
+  color: #222;
+}
+
+.port-item input {
+  width: 100px;
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.save-btn {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.save-btn:hover {
+  background-color: #357bd8;
+}
+
+.com-message {
+  margin-top: 1rem;
+  color: green;
+  font-weight: 500;
+}
