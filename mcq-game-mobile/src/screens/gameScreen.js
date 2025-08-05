@@ -246,12 +246,12 @@ const GameScreen = ({ navigation }) => {
           <Text style={styles.pretitle}>جاري التحميل...</Text>
         ) : (
           <View style={{ alignItems: 'center', justifyContent: 'center', gap: 20 }}>
-            <Text style={styles.pretitle}>Hi {name}, {'\n'} Please Wait for the admin to start the game</Text>
+            <Text style={styles.pretitle}>مرحبا {name}, {'\n'} يرجى الانتظار حتى يبدأ المشرف اللعبة</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('Home')}
               style={styles.backButton}
             >
-              <Text style={styles.backButtonText}>🔙 back</Text>
+              <Text style={styles.backButtonText}>🔙 رجوع</Text>
             </TouchableOpacity>
           </View>
         )}

@@ -235,13 +235,13 @@ const HostScreen = ({ navigation }) => {
                     <StatusBar style="light" />
                     {isLoading && <Text style={styles.centeredTitle}>جاري التحميل...</Text>}
                     <Text style={styles.centeredTitle}>
-                        {name && !isLoading ? `Hi ${name} ${'\n \n'} Please wait for the admin to start the game` : 'جاري التحميل...'}
+                        {name && !isLoading ? `مرحبا ${name} ${'\n \n'} يرجى الانتظار حتى يبدأ المشرف اللعبة` : 'جاري التحميل...'}
                     </Text>
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Home')}
                         style={styles.backButton}
                     >
-                        <Text style={styles.backButtonText}>🔙 back</Text>
+                        <Text style={styles.backButtonText}>🔙 رجوع</Text>
                     </TouchableOpacity>
                     {/* {name && !isLoading && (
                         <Text style={styles.centeredSubtitle}>يرجى انتظار بدء اللعبة من طرف المنسق</Text>
@@ -252,10 +252,10 @@ const HostScreen = ({ navigation }) => {
                     <View style={styles.centeredVertical}>
                         <View style={styles.mainRow}>
                             <View style={styles.leftColumn}>
-                                <Text style={styles.sectionTitle}>Question {qIndex + 1} / {questions.length}</Text>
+                                <Text style={styles.sectionTitle}>السؤال {qIndex + 1} / {questions.length}</Text>
                                 <View style={styles.timerCircle}>
                                     <Text style={styles.timerText}>{timeLeft}</Text>
-                                    <Text style={styles.timerSubText}>Seconds</Text>
+                                    <Text style={styles.timerSubText}>ثواني</Text>
                                 </View>                                <Text style={styles.questionText}>{currentQuestion.question}</Text>
 
                                 <View style={styles.optionsWrapper}>
@@ -269,7 +269,7 @@ const HostScreen = ({ navigation }) => {
                                     ))}
                                 </View>
 
-                                <Text style={styles.sectionTitle}>Player Answers</Text>
+                                <Text style={styles.sectionTitle}>إجابات اللاعبين</Text>
                                 <ScrollView style={{ maxHeight: 200 }}>
                                     {currentAnswers.map((user, idx) => {
                                         const isCorrect = currentQuestion.answers.find(
@@ -289,10 +289,10 @@ const HostScreen = ({ navigation }) => {
                             </View>
 
                             <View style={styles.rightColumn}>
-                                <Text style={styles.sectionTitle}>Score Table</Text>
+                                <Text style={styles.sectionTitle}>جدول النقاط</Text>
                                 <View style={styles.tableHeader}>
-                                    <Text style={styles.tableHeaderText}>Name</Text>
-                                    <Text style={styles.tableHeaderText}>Score</Text>
+                                    <Text style={styles.tableHeaderText}>الاسم</Text>
+                                    <Text style={styles.tableHeaderText}>النقاط</Text>
                                 </View>
                                 <ScrollView style={{ maxHeight: 300 }}>
                                     {liveUsers.filter(u => u.role !== 'host').sort((a, b) => b.score - a.score).map((u, idx) => (

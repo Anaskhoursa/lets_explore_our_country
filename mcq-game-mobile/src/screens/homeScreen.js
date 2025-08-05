@@ -117,20 +117,20 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.innerContainer}>
           {!selectedRole ? (
             <>
-              <Text style={styles.title}>Please Choose Your Role </Text>
+              <Text style={styles.title}>الرجاء اختيار دورك</Text>
 
               <View style={styles.roleButtons}>
                 <TouchableOpacity
                   style={styles.roleButton}
                   onPress={() => setSelectedRole('participant')}
                 >
-                  <Text style={styles.roleButtonText}>Participant</Text>
+                  <Text style={styles.roleButtonText}>مشارك</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.roleButton}
                   onPress={() => setSelectedRole('host')}
                 >
-                  <Text style={styles.roleButtonText}>Animator</Text>
+                  <Text style={styles.roleButtonText}>منشط</Text>
                 </TouchableOpacity>
               </View>
             </>
@@ -144,14 +144,14 @@ export default function HomeScreen({ navigation }) {
                   onPress={() => handleRefetch()}
                   style={styles.backButton}
                 >
-                  <Text style={styles.backButtonText}>Refresh</Text>
+                  <Text style={styles.backButtonText}>تحديث</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => setSelectedRole(null)}
                   style={styles.backButton}
                 >
-                  <Text style={styles.backButtonText}>🔙 Back</Text>
+                  <Text style={styles.backButtonText}>🔙 رجوع</Text>
                 </TouchableOpacity>
 
                 {isLoading ? (
@@ -176,7 +176,7 @@ export default function HomeScreen({ navigation }) {
                           <Text style={styles.role}>({item.role === 'host' ? 'Animator' : 'Participant'})</Text>
                         </View>
                         {isUserOnline(item.name) && (
-                          <Text style={styles.onlineStatus}>online</Text>
+                          <Text style={styles.onlineStatus}>متصل</Text>
                         )}
                       </TouchableOpacity>
                     )}
