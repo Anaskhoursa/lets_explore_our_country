@@ -63,6 +63,11 @@ export const incrementScore = async (userData) => {
   return res.data.message;
 };
 
+export const decrementScore = async (userData) => {
+  const res = await api.post('/decrement-score', userData);
+  return res.data.message;
+};
+
 export const removeUser = async (userData) => {
   const res = await api.post('/remove-user', userData);
   return res.data.message;

@@ -135,6 +135,16 @@ exports.incrementScore = async (req, res) => {
     }
 
 }
+exports.decrementScore = async (req, res) => {
+    const { id } = req.body
+    try {
+        await pool.query('update users set score = score - 1 where id = $1', [id])
+        res.status(200).json({ message: 'updated' })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+
+}
 
 exports.removeUser = async (req, res) => {
     const { id } = req.body

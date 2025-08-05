@@ -1,6 +1,6 @@
 const { playStats, updateCasparConfig, getCasparConfig, playScore, playBackground, stopScore, stopStats, stopBackground, playStats2, playScore2, playBackground2, stopStats2, stopScore2, stopBackground2, playCorrectOption, playCorrectOption2, playName, StopName, playLogo, stopLogo, play40Sec, stop40Sec, playVS, StopVS } = require('../controllers/casparCGController')
 const { getComPorts, setComPorts, setComTime } = require('../controllers/comController')
-const { GetUsers, addUser, addQuestion, getQuestions, adjustScore, removeUser, removeQuestion, updateQuestion, updateUser, getMidiPorts, setMidiOutputPort, resetAll, removeAllQuestions, incrementScore } = require('../controllers/controllers')
+const { GetUsers, addUser, addQuestion, getQuestions, adjustScore, removeUser, removeQuestion, updateQuestion, updateUser, getMidiPorts, setMidiOutputPort, resetAll, removeAllQuestions, incrementScore, decrementScore } = require('../controllers/controllers')
 
 const router = require('express').Router()
 
@@ -16,6 +16,7 @@ router.post('/update-question', updateQuestion)
 router.get('/get-questions', getQuestions)
 router.post('/adjust-score', adjustScore)
 router.post('/increment-score', incrementScore)
+router.post('/decrement-score', decrementScore)
 
 router.post('/remove-user', removeUser)
 router.post('/remove-question', removeQuestion)

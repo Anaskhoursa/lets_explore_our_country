@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSocket } from "../socketWrapper";
 import "./ManageGame.css";
-import { getAll, getQuestions, incrementScore, play40sec, playLogo, playVS, resetAll, showBackground, showBackground2, showCaspar, showCaspar2, showCorrectOption, showCorrectOption2, showScore, showScore2, stopBackground, stopBackground2, stopLogo, stopQ, stopQ2, stopScore, stopScore2, stopVS } from "../api/context";
+import { decrementScore, getAll, getQuestions, incrementScore, play40sec, playLogo, playVS, resetAll, showBackground, showBackground2, showCaspar, showCaspar2, showCorrectOption, showCorrectOption2, showScore, showScore2, stopBackground, stopBackground2, stopLogo, stopQ, stopQ2, stopScore, stopScore2, stopVS } from "../api/context";
 import { QueryClient, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ManageGame = () => {
@@ -34,6 +34,8 @@ const ManageGame = () => {
     const [challengeResults, setChallengeResults] = useState(
         Array(5).fill().map(() => ({ winner: [], loser: [] }))
     );
+    const [version, setVersion] = useState(localStorage.getItem('version') || '');
+
 
 
 
@@ -108,7 +110,9 @@ const ManageGame = () => {
         };
     }, [socket]);
 
-
+    useEffect(() => {
+        console.log(version)
+    }, version)
 
 
     // useEffect(() => {
@@ -483,6 +487,16 @@ const ManageGame = () => {
         setLiveUsers(newData.users);
         setUserAnswers(transformUserData(newData.users));
     }
+    const decrementScoreHandle = async (id) => {
+        await decrementScore({ id })
+        await queryClient.refetchQueries(['data']);
+
+        const newData = queryClient.getQueryData(['data']);
+        console.log('Fresh data:', newData);
+
+        setLiveUsers(newData.users);
+        setUserAnswers(transformUserData(newData.users));
+    }
 
     const startCountdown = () => {
         setTimeLeft(20);
@@ -710,8 +724,8 @@ const ManageGame = () => {
 
                     {/* <button onClick={() => handleReturnClick('return_question')} disabled={!buttonsEnabled || qIndex === null}>Return</button> */}
                     <button onClick={() => handleStopClick('stop_game')} disabled={qIndex === null}>Stop</button>
-                    <button onClick={() => { socket.emit('round_time'); setIsRound(true), setIsChallenge(false) }} >Defi</button>
-                    <button onClick={() => { socket.emit('between_round_time');; setIsRound(false), setIsChallenge(true) }} >Face a Face </button>
+                    <button style={{display: version === 'V1' ? 'none' : ''}} onClick={() => { socket.emit('round_time'); setIsRound(true), setIsChallenge(false) }} >Defi</button>
+                    <button style={{display: version === 'V1' ? 'none' : ''}} onClick={() => { socket.emit('between_round_time');; setIsRound(false), setIsChallenge(true) }} >Face a Face </button>
                     <button style={{ display: isChallenge || isRound ? '' : 'none' }} onClick={() => { setIsRound(false), setIsChallenge(false) }} >Return</button>
 
 
@@ -975,6 +989,27 @@ const ManageGame = () => {
                                         >
                                             {m} +1
                                         </button>
+                                        <button
+                                            key={idx}
+                                            onClick={() => decrementScoreHandle(users[0].id)}
+                                            style={{
+                                                padding: '8px 16px',
+                                                borderRadius: '6px',
+                                                backgroundColor: '#EF4444',
+                                                color: '#fff',
+                                                border: 'none',
+                                                fontWeight: '500',
+                                                cursor: 'pointer',
+                                                fontSize: '15px',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                marginTop: '2rem',
+                                                marginBottom: '2rem',
+                                                marginLeft: '1rem'
+
+                                            }}
+                                        >
+                                            {m} -1
+                                        </button>
                                     </div>
                                 ))}
                             </div>
@@ -1005,7 +1040,7 @@ const ManageGame = () => {
                                             style={{
                                                 padding: '8px 16px',
                                                 borderRadius: '6px',
-                                                backgroundColor: '#EF4444',
+                                                backgroundColor: '#10B981',
                                                 color: '#fff',
                                                 border: 'none',
                                                 fontWeight: '500',
@@ -1017,6 +1052,26 @@ const ManageGame = () => {
                                             }}
                                         >
                                             {m} +1
+                                        </button>
+                                        <button
+                                            key={idx}
+                                            onClick={() => decrementScoreHandle(users[1].id)}
+                                            style={{
+                                                padding: '8px 16px',
+                                                borderRadius: '6px',
+                                                backgroundColor: '#EF4444',
+                                                color: '#fff',
+                                                border: 'none',
+                                                fontWeight: '500',
+                                                cursor: 'pointer',
+                                                fontSize: '15px',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                marginTop: '2rem',
+                                                marginBottom: '2rem',
+                                                marginLeft: '1rem'
+                                            }}
+                                        >
+                                            {m} -1
                                         </button>
 
                                         {!challengeShow && <button style={{

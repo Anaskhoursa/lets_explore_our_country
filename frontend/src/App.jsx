@@ -10,6 +10,7 @@ import ManageMidi from './components/manageMidi.jsx';
 import ManageCasparSettings from './components/manageCaspar.jsx';
 import { GameProvider } from './components/gameManage.jsx';
 import ComPortSelector from './components/comSelector.jsx';
+import VersionSelector from './components/versionSelector.jsx';
 
 
 
@@ -19,7 +20,8 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<VersionSelector />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/add-user" element={<AddUser />} />
           <Route path="/add-question" element={<AddQuestion />} />
           <Route path="/adjust-score" element={<AdjustScore />} />

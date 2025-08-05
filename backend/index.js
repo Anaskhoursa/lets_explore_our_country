@@ -144,7 +144,7 @@ process.on('exit', () => {
   try {
     const ports = await SerialPort.list();
     const timedata = await fs.readFileSync(path.join(__dirname, 'comTime.json'), 'utf8');
-    const timeconfig = JSON.parse(timedata).time;
+    const timeconfig = JSON.parse(timedata).time*1000;
     const portsdata = await fs.readFileSync(path.join(__dirname, 'comConfig.json'), 'utf8');
     const portsconfig = JSON.parse(portsdata);
     let lastTime = 0;

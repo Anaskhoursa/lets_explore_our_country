@@ -7,7 +7,9 @@ function Navbar() {
     <nav className="navbar">
       <h1 className="logo">Quiz 2M V1</h1>
       <div className="nav-links">
-        <Link to="/" className="nav-button">Dashboard</Link>
+        <Link to="/" className="nav-button">Version</Link>
+
+        <Link to="/home" className="nav-button">Home</Link>
         <Link to="/add-user" className="nav-button">Add User</Link>
         <Link to="/add-question" className="nav-button">Add Question</Link>
         <Link to="/adjust-score" className="nav-button">Score Adjustment</Link>

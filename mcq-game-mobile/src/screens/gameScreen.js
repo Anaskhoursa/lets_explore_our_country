@@ -119,6 +119,8 @@ const GameScreen = ({ navigation }) => {
     const handler = (qIndex) => {
       gameStoppedRef.current = false;
       setQIndex(qIndex);
+      setIsChallenge(false)
+      setIsRound(false)
       startTimer()
     };
     socket.on('start_game', handler);
