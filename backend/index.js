@@ -168,7 +168,9 @@ process.on('exit', () => {
       port.on('data', async (data) => {
         const value = data.toString().trim();
         const now = Date.now();
-        const midi = portsconfig.filter(p => p.port === portInfo.path)[0].midi
+        const midiNumber = await pool.query('select midi from users where com = $1', [value])
+        const midi = midiNumber.rows[0].midi
+        
 
         if (now - lastTime > timeconfig) {
           console.log(`Buzzer triggered: ${value}`);
@@ -205,7 +207,7 @@ process.on('exit', () => {
       });
     });
   } catch (err) {
-    console.error('Error listing or opening ports:', err);
+    console.error('Error listing on opening ports:', err);
   }
 })();
 

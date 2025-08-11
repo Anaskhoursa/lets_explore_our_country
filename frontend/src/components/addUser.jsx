@@ -109,7 +109,7 @@ const AddUser = () => {
                                 <td>{user.members?.length > 0 ? user.members.map((e, index) => index !== user.members.length - 1 ? `${e} ,` : `${e}`) : 'no members'}</td>
                                 <td>
                                     <button className='update-btn' onClick={() => {
-                                        setFormData({ name: user.name, role: user.role, midi: user.midi, members: user.members ? user.members : [] });
+                                        setFormData({ name: user.name, role: user.role, midi: user.midi, members: user.members ? user.members : [], com: user.com });
                                         setNumberOfMembers(user.members ? user.members.length : 0)
                                         setIsEditing(true);
                                         setEditingId(user.id);
