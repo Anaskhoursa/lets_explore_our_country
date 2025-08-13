@@ -1,0 +1,206 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: 'Arial', sans-serif;
+      color: white;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .container {
+      padding: 20px;
+      width: 100%;
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .results {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .result-box {
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      width: 45%;
+      backdrop-filter: blur(4px);
+    }
+
+    .result-label {
+      font-size: 2rem;
+    }
+
+    .result-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+
+    #yes {
+      color: #4CAF50;
+    }
+
+    #no {
+      color: #F44336;
+    }
+
+    #chart-container {
+      width: 100%;
+      height: 300px;
+    }
+
+    .changed {
+      animation: pulse 0.5s;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>VOTING RESULTS</h1>
+    <div class="results">
+      <div class="result-box">
+        <div class="result-label">👍</div>
+        <div id="yes" class="result-value">0%</div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">👎</div>
+        <div id="no" class="result-value">0%</div>
+      </div>
+    </div>
+    <div id="chart-container">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    let chart;
+    let lastValues = { yes: 0, no: 0 };
+
+    function initChart() {
+      const ctx = document.getElementById('chart').getContext('2d');
+      return new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Yes', 'No'],
+          datasets: [{
+            label: 'Votes',
+            data: [0, 0],
+            backgroundColor: [
+              'rgba(76, 175, 80, 0.85)',
+              'rgba(244, 67, 54, 0.85)'
+            ],
+            borderColor: [
+              'rgba(76, 175, 80, 1)',
+              'rgba(244, 67, 54, 1)'
+            ],
+            borderWidth: 3,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                  const value = context.raw;
+                  const percent = total > 0 ? Math.round((value / total) * 100) : 0;
+                  return `${value} votes (${percent}%)`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: 'white',
+                font: { size: 14 }
+              },
+              grid: {
+                color: 'rgba(255,255,255,0.1)'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: 'white',
+                stepSize: 1
+              },
+              grid: {
+                color: 'rgba(255,255,255,0.1)'
+              }
+            }
+          },
+          animation: {
+            duration: 700
+          }
+        }
+      });
+    }
+
+    try {
+      chart = initChart();
+    } catch (e) {
+      console.error("Chart init failed", e);
+    }
+
+    window.update = function (str) {
+      try {
+        const data = JSON.parse(str);
+        const total = data.yes + data.no;
+        const yesElement = document.getElementById('yes');
+        const noElement = document.getElementById('no');
+
+        const yesPercent = total ? Math.round((data.yes / total) * 100) : 0;
+        const noPercent = total ? Math.round((data.no / total) * 100) : 0;
+
+        if (data.yes !== lastValues.yes) {
+          yesElement.textContent = yesPercent + '%';
+          yesElement.classList.add('changed');
+          setTimeout(() => yesElement.classList.remove('changed'), 500);
+        }
+
+        if (data.no !== lastValues.no) {
+          noElement.textContent = noPercent + '%';
+          noElement.classList.add('changed');
+          setTimeout(() => noElement.classList.remove('changed'), 500);
+        }
+
+        if (chart) {
+          chart.data.datasets[0].data = [data.yes, data.no];
+          chart.update();
+        }
+
+        lastValues = { yes: data.yes, no: data.no };
+
+      } catch (err) {
+        console.error('Update error:', err);
+      }
+    };
+  </script>
+</body>
+</html>
