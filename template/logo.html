@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+    #logo {
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <img id="logo" src="logo.png" width="300" />
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('logo').style.opacity = 1;
+      }, 100); // delay before fade-in starts
+    });
+  </script>
+</body>
+</html>

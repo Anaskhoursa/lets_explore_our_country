@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CasparCG Name Lower Third</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: transparent;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    .name-container {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 102, 255, 0.8);
+      color: white;
+      padding: 20px 60px;
+      border-radius: 50px;
+      font-size: 2.5rem;
+      font-weight: 600;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      white-space: nowrap;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, 30px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="nameBox" class="name-container"></div>
+
+  <script>
+    function update(dataString) {
+      try {
+        const data = typeof dataString === 'string' ? JSON.parse(dataString) : data;
+        const nameBox = document.getElementById("nameBox");
+        nameBox.textContent = data.name || '';
+        nameBox.style.animation = "fadeIn 1s ease forwards";
+      } catch (err) {
+        console.error("Invalid data:", err);
+      }
+    }
+
+    function play(data) {
+      update(data);
+    }
+
+    function stop() {
+      const nameBox = document.getElementById("nameBox");
+      nameBox.style.opacity = 0;
+    }
+  </script>
+</body>
+</html>

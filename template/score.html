@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CasparCG Score Table</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: transparent;
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      width: 100vw;
+    }
+
+    .score-table-container {
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(6px);
+      border-radius: 30px;
+      padding: 50px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+      max-width: 900px;
+      width: 95%;
+      text-align: center;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      animation: fadeInScale 0.8s ease-out forwards;
+      position: relative;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      margin-bottom: 12px;
+      background-color: rgba(0, 13, 255, 0.45);
+      border-radius: 14px;
+      transition: all 0.3s ease;
+      transform: translateX(-100%);
+      opacity: 0;
+      animation: slideIn 0.5s forwards;
+    }
+
+    .score-row:nth-child(odd) {
+      background-color: rgba(0, 13, 255, 0.45);
+    }
+
+    .score-row:hover {
+      background-color: rgba(0, 13, 255, 0.5);
+      transform: scale(1.02);
+    }
+
+    @keyframes slideIn {
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .score-row.header {
+      background-color: rgba(0, 0, 0, 0.05);
+      color: #fff;
+      font-weight: bold;
+      padding: 25px 30px;
+      margin-bottom: 25px;
+      border-radius: 14px;
+      font-size: 2.5em;
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .score-row-name {
+      color: #ffffff;
+      font-size: 2.2em;
+      text-align: center;
+      padding-left: 10px;
+    }
+
+    .score-row-score {
+      color: #4ade80;
+      font-size: 2.2em;
+      font-weight: bold;
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 8px 20px;
+      border-radius: 10px;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .table-title {
+      color: #fff;
+      font-size: 3.5em;
+      font-weight: 800;
+      margin-bottom: 30px;
+      text-shadow: 0 5px 12px rgba(0, 0, 0, 0.5);
+      letter-spacing: 1.5px;
+    }
+
+    @media (max-width: 768px) {
+      .score-table-container {
+        padding: 30px;
+        border-radius: 20px;
+      }
+
+      .score-row,
+      .score-row.header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+
+      .score-row-name,
+      .score-row-score {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="scoreTableContainer" class="score-table-container">
+    <div class="score-row header">
+      <div class="score-row-score">Score</div>
+      <div class="score-row-name">Player</div>
+    </div>
+    <div id="scoreRows" class="flex flex-col"></div>
+  </div>
+
+  <script>
+    function updateScoreTable(data) {
+      const scoreRowsContainer = document.getElementById('scoreRows');
+      scoreRowsContainer.innerHTML = '';
+
+      data.sort((a, b) => b.score - a.score);
+
+      data.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.className = 'score-row';
+        row.style.animationDelay = (0.1 * index) + 's';
+
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'score-row-name';
+        nameDiv.textContent = item.name;
+
+        const scoreDiv = document.createElement('div');
+        scoreDiv.className = 'score-row-score';
+        scoreDiv.textContent = item.score;
+
+        row.appendChild(scoreDiv);
+        row.appendChild(nameDiv);
+        scoreRowsContainer.appendChild(row);
+      });
+    }
+
+    function play(dataString) {
+      console.log("CasparCG play function called with data:", dataString);
+      try {
+        const parsedData = JSON.parse(dataString);
+        if (parsedData && parsedData.data) {
+          updateScoreTable(parsedData.data);
+        } else {
+          console.error("Invalid data structure received in play function:", dataString);
+        }
+      } catch (e) {
+        console.error("Error parsing data in play function:", e);
+      }
+    }
+
+    function update(dataString) {
+      console.log("CasparCG update function called with data:", dataString);
+      try {
+        const parsedData = JSON.parse(dataString);
+        if (parsedData && parsedData.data) {
+          updateScoreTable(parsedData.data);
+        } else {
+          console.error("Invalid data structure received in update function:", dataString);
+        }
+      } catch (e) {
+        console.error("Error parsing data in update function:", e);
+      }
+    }
+
+    function stop() {
+      console.log("CasparCG stop function called.");
+      const container = document.getElementById('scoreTableContainer');
+      if (container) {
+        container.style.animation = 'fadeOut 0.5s ease-out forwards';
+      }
+    }
+  </script>
+</body>
+
+</html>
