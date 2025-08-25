@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4 Equal Divs Full Page</title>
+  <style>
+    /* Separator lines for grid */
+    #container {
+      position: relative;
+    }
+
+    #container::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 0.5rem;
+      height: 100%;
+      background: #222;
+      z-index: 1;
+      transform: translateX(-50%);
+    }
+
+    #container::after,
+    #container .horizontal-separator {
+      display: none;
+    }
+
+    .modern-box {
+      z-index: 2;
+    }
+
+    .player-total {
+      font-size: 1.3rem;
+      color: #888;
+      margin-top: 0.7rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    #container {
+      display: grid;
+      grid-template-columns: 1fr 0.5rem 1fr;
+      grid-template-rows: 1fr;
+      gap: 0;
+      height: 100vh;
+      width: 100vw;
+      padding: 40px;
+      box-sizing: border-box;
+    }
+
+    .modern-box {
+      background: #000000;
+      border-radius: 24px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      transition: background 0.3s;
+      min-height: 200px;
+    }
+
+    .player-name {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .player-score {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #555;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container" style="position:relative;">
+    <div id="box1" class="modern-box" style="grid-column: 1; grid-row: 1;">
+      <div class="player-name">Player 1</div>
+      <div class="player-score">1</div>
+    </div>
+    <div style="grid-column: 2; grid-row: 1; background: #222; height: 100%; width: 0.5rem;"></div>
+    <div id="box2" class="modern-box" style="grid-column: 3; grid-row: 1;">
+      <div class="player-name">Player 2</div>
+      <div class="player-score">2</div>
+    </div>
+  </div>
+</body>
+
+<script>
+  function play() {
+    // called when the template starts
+    console.log("Template started");
+  }
+
+  function stop() {
+    // called when template is removed
+    console.log("Template stopped");
+  }
+
+  // Existing update function
+  function update(jsonData) {
+    if (typeof jsonData === 'string') {
+      var data = {};
+      try {
+        data = JSON.parse(jsonData);
+      } catch (e) {
+        console.error('Invalid JSON:', e);
+        return;
+      }
+
+      function setBox(id, player) {
+        var box = document.getElementById(id);
+        if (!box) return;
+
+        box.querySelector('.player-name').textContent = player.name || '';
+        box.querySelector('.player-score').textContent =
+          player.score !== undefined ? player.score : '';
+
+        if (player.isCorrect === true) {
+          box.style.background = '#43ea7a'; // green
+        } else if (player.isCorrect === false) {
+          box.style.background = '#ff4d4f'; // red
+        } else {
+          box.style.background = '#000'; // default black
+        }
+      }
+
+      // your data is an array under "data"
+      if (Array.isArray(data.data)) {
+        setBox('box1', data.data[0] || {});
+        setBox('box2', data.data[1] || {});
+      }
+    }
+  }
+</script>
+
+</html>
