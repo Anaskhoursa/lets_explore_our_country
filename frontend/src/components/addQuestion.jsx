@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getQuestions, addQuestion, updateQuestion, removeQuestion, removeAllQuestions } from '../api/context';
 import './addQuestion.css';
@@ -23,6 +23,13 @@ const AddQuestion = () => {
     const [editingId, setEditingId] = useState(null);
 
     const [csvData, setcsvData] = useState(null)
+
+    const [categoryInput, setCategoryInput] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedQCategory, setSelectedQCategory] = useState("");
+    const [selectedFCategory, setSelectedFCategory] = useState("");
+    const [version, setVersion] = useState(localStorage.getItem('version') || '');
 
 
     const mutation = useMutation({
@@ -87,6 +94,7 @@ const AddQuestion = () => {
 
                     return {
                         question: row.question,
+                        question: row.category,
                         answers,
                         order: parseInt(row.order),
                     };
@@ -123,6 +131,7 @@ const AddQuestion = () => {
             question: questionText,
             answers: answerObjects,
             order,
+            category: selectedQCategory
         };
 
         if (isEditing) {
@@ -132,18 +141,153 @@ const AddQuestion = () => {
         }
     };
 
+    useEffect(() => {
+        const stored = JSON.parse(localStorage.getItem("categories")) || [];
+        setCategories(stored);
+    }, []);
+
+    // Add category to localStorage and state
+    const addCategory = () => {
+        if (!categoryInput.trim()) return;
+
+        const newCategories = [...categories, categoryInput.trim()];
+        setCategories(newCategories);
+        localStorage.setItem("categories", JSON.stringify(newCategories));
+        setCategoryInput(""); // clear input
+    };
+
+    // Handle selection
+    const handleSelect = (e) => {
+        setSelectedCategory(e.target.value);
+    };
+    const handleSelectQ = (e) => {
+        setSelectedQCategory(e.target.value);
+    };
+    const handleSelectF = (e) => {
+        setSelectedFCategory(e.target.value);
+    };
+    const handleDelete = () => {
+        const newCategories = categories.filter(c => c !== selectedCategory)
+        setCategories(newCategories);
+        localStorage.setItem("categories", JSON.stringify(newCategories));
+        setCategoryInput(""); // clear input
+        setSelectedCategory('');
+
+    };
+
 
     return (
         <div className="question-container">
+
+            <div
+                style={{
+                    padding: "16px",
+                    maxWidth: "400px",
+                    margin: "0 auto",
+                    display: version === 'V3' ? "flex" : "none",
+                    flexDirection: "column",
+                    gap: "16px",
+                    fontFamily: "Arial, sans-serif",
+                }}
+            >
+                <h2 style={{ fontSize: "20px", fontWeight: "bold" }}>Category Manager</h2>
+
+                <div style={{ display: "flex", gap: "8px" }}>
+                    <input
+                        type="text"
+                        value={categoryInput}
+                        onChange={(e) => setCategoryInput(e.target.value)}
+                        placeholder="Enter category"
+                        style={{
+                            border: "1px solid #ccc",
+                            borderRadius: "6px",
+                            padding: "8px",
+                            flex: 1,
+                        }}
+                    />
+                    <button
+                        onClick={addCategory}
+                        style={{
+                            backgroundColor: "#007BFF",
+                            color: "white",
+                            border: "none",
+                            padding: "8px 16px",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        Add
+                    </button>
+                </div>
+
+                <select
+                    value={selectedCategory}
+                    onChange={handleSelect}
+                    style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "6px",
+                        padding: "8px",
+                        display: version === 'V3' ? "flex" : "none",
+
+                    }}
+                >
+                    <option value="">-- Select a category --</option>
+                    {categories.map((cat, i) => (
+                        <option key={i} value={cat}>
+                            {cat}
+                        </option>
+                    ))}
+                </select>
+                <button
+                    onClick={handleDelete}
+                    style={{
+                        backgroundColor: "red",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 16px",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                    }}
+                >
+                    Delete
+                </button>
+
+                {/* Display selected */}
+                {selectedCategory && (
+                    <p style={{ color: "#333" }}>
+                        Selected category: <b>{selectedCategory}</b>
+                    </p>
+                )}
+            </div>
             <section className="dashboard-section">
                 <h2 className="section-title">Questions</h2>
-                <button className="remove-btn" style={{ margin: '1rem', backgroundColor:'red' }} onClick={() => {removeAllQuestions(); queryClient.invalidateQueries(['questions'])}}>
+                <button className="remove-btn" style={{ margin: '1rem', backgroundColor: 'red' }} onClick={() => { removeAllQuestions(); queryClient.invalidateQueries(['questions']) }}>
                     DELETE ALL QUESTIONS
                 </button>
+                <select
+                    value={selectedFCategory}
+                    onChange={handleSelectF}
+                    style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "6px",
+                        padding: "8px",
+                        display: version === 'V3' ? "flex" : "none",
+
+                    }}
+                >
+                    <option value="">Select a category</option>
+                    {categories.map((cat, i) => (
+                        <option key={i} value={cat}>
+                            {cat}
+                        </option>
+                    ))}
+                </select>
                 <div className="card-grid">
-                    {questions?.map((q, index) => (
+                    {questions.filter(q => selectedFCategory ? q.category === selectedFCategory : q)?.map((q, index) => (
                         <div className="card question-card" key={q.id}>
                             <div>
+                                <p className="question-text"><strong>Category:</strong> {q.category}</p>
+
                                 <p className="question-text"><strong>Q{index + 1}:</strong> {q.question}</p>
                                 <ul className="answer-list">
                                     {q.answers.map((ans, i) => (
@@ -167,7 +311,7 @@ const AddQuestion = () => {
                             }}>
                                 Edit
                             </button>
-                            <button className="remove-btn" style={{ marginLeft: '0.5rem', backgroundColor:'red' }} onClick={() => handleRemoveQ(q.id)}>
+                            <button className="remove-btn" style={{ marginLeft: '0.5rem', backgroundColor: 'red' }} onClick={() => handleRemoveQ(q.id)}>
                                 Remove
                             </button>
 
@@ -180,6 +324,24 @@ const AddQuestion = () => {
             <div className="question-form">
                 <h2>{!isEditing ? 'Add New Question' : 'Modify The Question'}</h2>
                 <form onSubmit={handleSubmit}>
+                    <select
+                        value={selectedQCategory}
+                        onChange={handleSelectQ}
+                        style={{
+                            border: "1px solid #ccc",
+                            borderRadius: "6px",
+                            padding: "8px",
+                            display: version === 'V3' ? "flex" : "none",
+
+                        }}
+                    >
+                        <option value="">-- Select a category --</option>
+                        {categories.map((cat, i) => (
+                            <option key={i} value={cat}>
+                                {cat}
+                            </option>
+                        ))}
+                    </select>
                     <input
                         type="text"
                         placeholder="Enter question"

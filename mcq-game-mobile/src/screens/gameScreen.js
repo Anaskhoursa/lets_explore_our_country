@@ -22,6 +22,8 @@ const GameScreen = ({ navigation }) => {
   const [isRound, setIsRound] = useState(false);
 
   const [isChallenge, setIsChallenge] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [Questions, setQuestions] = useState([]);
 
 
   const gameStoppedRef = useRef(false);
@@ -53,12 +55,18 @@ const GameScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
+    if (data) {
+      setQuestions(data)
+    }
+  }, data)
+
+  useEffect(() => {
     if (data && qIndex !== null && qIndex < data.length) {
-      currentQuestionIdRef.current = data[qIndex].id;
+      currentQuestionIdRef.current = Questions[qIndex].id;
       setAnswer(null);
       hasSubmittedRef.current = false;
     }
-  }, [data, qIndex]);
+  }, [data, qIndex, Questions]);
 
   useEffect(() => {
     return () => clearTimeout(timeoutRef.current);
@@ -70,7 +78,7 @@ const GameScreen = ({ navigation }) => {
 
     timeoutRef.current = setTimeout(() => {
       setTimeLeft((prev) => prev - 1);
-    }, 900);
+    }, 1000);
 
     return () => clearTimeout(timeoutRef.current);
   }, [timeLeft, qIndex]);
@@ -113,6 +121,20 @@ const GameScreen = ({ navigation }) => {
   //   startTimer();
   //   return () => clearTimeout(timeoutRef.current);
   // }, [qIndex, data]);
+
+  useEffect(() => {
+    if (!socket) return;
+    const handler = (category) => {
+      console.log(category)
+      setQuestions(
+        category
+          ? data?.filter((q) => q.category === category)
+          : data
+      );
+    };
+    socket.on('update_category', handler);
+    return () => socket.off('update_category', handler);
+  }, [socket, data]);
 
   useEffect(() => {
     if (!socket) return;
@@ -203,7 +225,7 @@ const GameScreen = ({ navigation }) => {
   const handleAnswerSelect = (text) => {
     if (timeLeft > 0) {
       const newAnswer = {
-        questionId: data[qIndex].id,
+        questionId: Questions[qIndex].id,
         text
       };
       setAnswer(newAnswer);
@@ -211,7 +233,7 @@ const GameScreen = ({ navigation }) => {
     }
   };
 
-  if (isLoading || !data) {
+  if (isLoading || !data || !Questions) {
     return (
       <LinearGradient colors={['#00C6FF', '#FBD72B']} style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -229,11 +251,11 @@ const GameScreen = ({ navigation }) => {
     );
   }
 
-  if (qIndex >= data.length) {
+  if (qIndex >= Questions.length) {
     return (
       <LinearGradient colors={['#00C6FF', '#FBD72B']} style={styles.container}>
         <StatusBar barStyle="light-content" />
-        <Text style={styles.pretitle}>انتهت اللعبة</Text>
+        <Text style={styles.pretitle}> انتهت الجولة</Text>
       </LinearGradient>
     );
   }
@@ -248,7 +270,7 @@ const GameScreen = ({ navigation }) => {
           <View style={{ alignItems: 'center', justifyContent: 'center', gap: 20 }}>
             <Text style={styles.pretitle}>مرحبا {name}, {'\n'} يرجى الانتظار حتى يبدأ المشرف اللعبة</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Home')}
+              onPress={() => navigation.replace('Home')}
               style={styles.backButton}
             >
               <Text style={styles.backButtonText}>🔙 رجوع</Text>
@@ -259,7 +281,7 @@ const GameScreen = ({ navigation }) => {
     );
   }
 
-  const currentQuestion = data[qIndex];
+  const currentQuestion = Questions[qIndex];
 
   return (
     <LinearGradient colors={["#00C6FF", "#FBD72B"]} style={styles.container}>

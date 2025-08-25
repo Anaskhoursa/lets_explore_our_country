@@ -26,6 +26,20 @@
   transition: background-color 0.2s ease-in-out;
 }
 
+.category-btn {
+  padding: 0.7rem 1.2rem;
+  background-color: #269205;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  width: 15rem;
+    height: 4rem;
+
+}
+
 .game-controls button:hover {
   background-color: #0056b3;
 }

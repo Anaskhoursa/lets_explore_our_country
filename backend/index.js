@@ -266,6 +266,15 @@ io.on('connection', (socket) => {
 
 
   });
+
+  socket.on('update_category', (category) => {
+
+    io.emit('update_category', category);
+
+
+
+  });
+
   socket.on('next_question', () => {
     console.log('Received next_question', socket.id);
 

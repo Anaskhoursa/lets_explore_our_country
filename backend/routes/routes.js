@@ -1,4 +1,4 @@
-const { playStats, updateCasparConfig, getCasparConfig, playScore, playBackground, stopScore, stopStats, stopBackground, playStats2, playScore2, playBackground2, stopStats2, stopScore2, stopBackground2, playCorrectOption, playCorrectOption2, playName, StopName, playLogo, stopLogo, play40Sec, stop40Sec, playVS, StopVS } = require('../controllers/casparCGController')
+const { playStats, updateCasparConfig, getCasparConfig, playScore, playBackground, stopScore, stopStats, stopBackground, playStats2, playScore2, playBackground2, stopStats2, stopScore2, stopBackground2, playCorrectOption, playCorrectOption2, playName, StopName, playLogo, stopLogo, play40Sec, stop40Sec, playVS, StopVS, playAllDetails, stopAllDetails, playCategory, stopCategory } = require('../controllers/casparCGController')
 const { getComPorts, setComPorts, setComTime } = require('../controllers/comController')
 const { GetUsers, addUser, addQuestion, getQuestions, adjustScore, removeUser, removeQuestion, updateQuestion, updateUser, getMidiPorts, setMidiOutputPort, resetAll, removeAllQuestions, incrementScore, decrementScore } = require('../controllers/controllers')
 
@@ -49,6 +49,10 @@ router.post('/play-logo', playLogo)
 router.post('/stop-logo', stopLogo)
 router.post('/play-40', play40Sec)
 router.post('/stop-40', stop40Sec)
+router.post('/play-all', playAllDetails)
+router.post('/stop-all', stopAllDetails)
+router.post('/play-category', playCategory)
+router.post('/stop-category', stopCategory)
 
 router.post('/play-vs', playVS)
 router.post('/stop-vs', StopVS)

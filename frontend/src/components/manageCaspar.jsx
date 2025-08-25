@@ -3,7 +3,7 @@ import './manageCaspar.css';
 import { getCasparConfig, updateCasparConfig } from '../api/context';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-const sections = ['question', 'score', 'background', 'name', 'logo', 'roundTimer', 'vs'];
+const sections = ['question', 'score', 'background', 'name', 'logo', 'roundTimer', 'vs', 'alldetails'];
 
 export default function ManageCasparSettings() {
     const queryClient = useQueryClient();

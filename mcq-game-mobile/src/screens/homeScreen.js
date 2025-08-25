@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation }) {
 
 
 
-  const SOCKET_URL = 'http://192.168.1.8:3001';
+  const SOCKET_URL = 'http://10.249.1.23:3001';
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
   const onlineSocketRef = useRef(null);
@@ -82,7 +82,7 @@ export default function HomeScreen({ navigation }) {
     try {
       await AsyncStorage.setItem('name', name);
       await AsyncStorage.setItem('role', role);
-      navigation.navigate(role === 'host' ? 'Host' : 'Game');
+      navigation.replace(role === 'host' ? 'Host' : 'Game');
     } catch (error) {
       alert('فشل في الحفظ.', error);
     }

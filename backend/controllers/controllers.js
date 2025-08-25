@@ -37,11 +37,11 @@ exports.addUser = async (req, res) => {
 }
 
 exports.addQuestion = async (req, res) => {
-    const { question, order } = req.body
+    const { question, order, category } = req.body
     const answers = JSON.stringify(req.body.answers);
 
     try {
-        await pool.query('insert into questions (question, answers, ordre) VALUES ($1, $2, $3)', [question, answers, order])
+        await pool.query('insert into questions (question, answers, ordre, category) VALUES ($1, $2, $3, $4)', [question, answers, order, category])
         res.status(200).json({ message: 'added' })
 
     } catch (error) {

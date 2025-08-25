@@ -913,6 +913,158 @@ const stop40Sec = async (req, res) => {
     }
 };
 
+const playAllDetails = async (req, res) => {
+    try {
+        await connectToCaspar();
+        const config = loadConfig();
+        const { data } = req.body;
 
 
-module.exports = { connectToCaspar, playName, StopName, playVS, StopVS, playLogo, stopLogo, playStats, getCasparConfig, updateCasparConfig, playScore, playBackground, playCorrectOption, playCorrectOption2, stopBackground, stopScore, stopStats, playStats2, playScore2, playBackground2, stopBackground2, stopScore2, stopStats2, play40Sec, stop40Sec };
+        const channel = config.alldetails.channel;
+        const layer = config.alldetails.layer;
+        const channel2 = config.alldetails.channel2;
+        const layer2 = config.alldetails.layer2;
+        const templateName = data.length > 4 ? 'all6' : data.number > 2 ? 'all4' : 'all2';
+
+        const dataObj = {
+            data
+        };
+        let casparData = JSON.stringify(dataObj);
+        casparData = escapeCasparJSON(casparData);
+
+
+        await sendCommand(`STOP ${channel2}-${layer2}`);
+
+        await sendCommand(`STOP ${channel}-${layer}`);
+
+        const command = `CG ${channel}-${layer} ADD 1 "${templateName}" 1 "${casparData}"`;
+        const command2 = `CG ${channel2}-${layer2} ADD 1 "${templateName}" 1 "${casparData}"`;
+
+        await sendCommand(command);
+        await sendCommand(command2);
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('playStats error:', err);
+        res.status(500).json({ success: false, error: err.toString() });
+    }
+};
+
+const stopAllDetails = async (req, res) => {
+    try {
+        await connectToCaspar();
+        const config = loadConfig();
+
+
+        const channel = config.alldetails.channel;
+        const layer = config.alldetails.layer;
+        const channel2 = config.alldetails.channel2;
+        const layer2 = config.alldetails.layer2;
+        const templateName = config.alldetails.path;
+
+        // const dataObj = {
+        //     question: sanitizeText(question),
+        //     options: options.map(opt => ({
+        //         text: sanitizeText(opt.text),
+        //         isCorrect: opt.isCorrect
+        //     }))
+        // };
+        // let casparData = JSON.stringify(dataObj);
+        // casparData = escapeCasparJSON(casparData);
+
+
+        await sendCommand(`STOP ${channel2}-${layer2}`);
+
+        await sendCommand(`STOP ${channel}-${layer}`);
+
+        // const command = `PLAY ${channel}-${layer} "${templateName}" 1`;
+        // const command2 = `PLAY ${channel2}-${layer2} "${templateName}" 1`;
+
+        // await sendCommand(command);
+        // await sendCommand(command2);
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('playStats error:', err);
+        res.status(500).json({ success: false, error: err.toString() });
+    }
+};
+
+const playCategory = async (req, res) => {
+    try {
+        await connectToCaspar();
+        const config = loadConfig();
+        const { data } = req.body;
+    
+        const category = data.category;
+        const channel = config.alldetails.channel;
+        const layer = config.alldetails.layer;
+        const channel2 = config.alldetails.channel2;
+        const layer2 = config.alldetails.layer2;
+        const templateName = data.number > 4 ? 'category6' : data.number > 2 ? 'category4' : 'category2';
+        const dataObj = {
+            category
+        };
+
+        let casparData = JSON.stringify(dataObj);
+        casparData = escapeCasparJSON(casparData);
+
+
+        await sendCommand(`STOP ${channel2}-${layer2}`);
+
+        await sendCommand(`STOP ${channel}-${layer}`);
+
+        const command = `CG ${channel}-${layer} ADD 1 "${templateName}" 1 "${casparData}"`;
+        const command2 = `CG ${channel2}-${layer2} ADD 1 "${templateName}" 1 "${casparData}"`;
+
+        await sendCommand(command);
+        await sendCommand(command2);
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('playStats error:', err);
+        res.status(500).json({ success: false, error: err.toString() });
+    }
+};
+
+const stopCategory = async (req, res) => {
+    try {
+        await connectToCaspar();
+        const config = loadConfig();
+
+
+        const channel = config.alldetails.channel;
+        const layer = config.alldetails.layer;
+        const channel2 = config.alldetails.channel2;
+        const layer2 = config.alldetails.layer2;
+        const templateName = config.alldetails.path;
+
+        // const dataObj = {
+        //     question: sanitizeText(question),
+        //     options: options.map(opt => ({
+        //         text: sanitizeText(opt.text),
+        //         isCorrect: opt.isCorrect
+        //     }))
+        // };
+        // let casparData = JSON.stringify(dataObj);
+        // casparData = escapeCasparJSON(casparData);
+
+
+        await sendCommand(`STOP ${channel2}-${layer2}`);
+
+        await sendCommand(`STOP ${channel}-${layer}`);
+
+        // const command = `PLAY ${channel}-${layer} "${templateName}" 1`;
+        // const command2 = `PLAY ${channel2}-${layer2} "${templateName}" 1`;
+
+        // await sendCommand(command);
+        // await sendCommand(command2);
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('playStats error:', err);
+        res.status(500).json({ success: false, error: err.toString() });
+    }
+};
+
+module.exports = { playCategory, stopCategory, connectToCaspar, playName, StopName, playVS, StopVS, playLogo, stopLogo, playStats, getCasparConfig, updateCasparConfig, playScore, playBackground, playCorrectOption, playCorrectOption2, stopBackground, stopScore, stopStats, playStats2, playScore2, playBackground2, stopBackground2, stopScore2, stopStats2, play40Sec, stop40Sec, playAllDetails, stopAllDetails };

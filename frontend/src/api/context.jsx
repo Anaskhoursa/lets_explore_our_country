@@ -188,6 +188,27 @@ export const stop40sec = async (userData) => {
   return res.data.message;
 };
 
+export const playAllDetails = async (userData) => {
+  const res = await api.post('/play-all', {data: userData});
+  return res.data.message;
+};
+
+export const stopAllDetails = async (userData) => {
+  const res = await api.post('/stop-all', userData);
+  return res.data.message;
+};
+
+
+export const playCategory = async (userData) => {
+  const res = await api.post('/play-category', {data: userData});
+  return res.data.message;
+};
+
+export const stopCtegory = async (userData) => {
+  const res = await api.post('/stop-category', userData);
+  return res.data.message;
+};
+
 export const playVS = async (userData) => {
   const res = await api.post('/play-vs', userData);
   return res.data.message;

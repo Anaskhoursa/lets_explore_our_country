@@ -15,6 +15,8 @@ const HostScreen = ({ navigation }) => {
     const [liveUsers, setLiveUsers] = useState([]);
     const [userAnswers, setUserAnswers] = useState({});
     const [name, setName] = useState()
+    const [questions, setQuestions] = useState([]);
+
 
     const intervalRef = useRef(null);
     const queryClient = useQueryClient()
@@ -24,7 +26,11 @@ const HostScreen = ({ navigation }) => {
         queryFn: getAll,
     });
 
-    const questions = data?.questions || [];
+    useEffect(() => {
+        if (data) {
+            setQuestions(data)
+        }
+    }, data)
     const users = data?.users || [];
 
     useEffect(() => {
@@ -56,6 +62,20 @@ const HostScreen = ({ navigation }) => {
             intervalRef.current = null;
         }
     }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+        const handler = (category) => {
+            console.log(category)
+            setQuestions(
+                category
+                    ? data?.filter((q) => q.category === category)
+                    : data
+            );
+        };
+        socket.on('update_category', handler);
+        return () => socket.off('update_category', handler);
+    }, [socket, data]);
 
     useEffect(() => {
         if (!socket) return;
@@ -154,7 +174,7 @@ const HostScreen = ({ navigation }) => {
         const stop_handler = () => {
             stopTimer();
             setQIndex(null);
-            navigation.navigate('Hello');
+            navigation.replace('Hello');
 
         };
 
@@ -183,7 +203,7 @@ const HostScreen = ({ navigation }) => {
     }, [data]);
 
     useEffect(() => {
-        if (!data || qIndex >= data.questions.length) return;
+        if (!data || qIndex >= questions.length) return;
         startCountdown();
         return () => clearInterval(intervalRef.current);
     }, [qIndex, data]);
@@ -238,7 +258,7 @@ const HostScreen = ({ navigation }) => {
                         {name && !isLoading ? `مرحبا ${name} ${'\n \n'} يرجى الانتظار حتى يبدأ المشرف اللعبة` : 'جاري التحميل...'}
                     </Text>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('Home')}
+                        onPress={() => navigation.replace('Home')}
                         style={styles.backButton}
                     >
                         <Text style={styles.backButtonText}>🔙 رجوع</Text>
@@ -319,12 +339,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 40,
-  },
+        flex: 1,
+        paddingHorizontal: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 40,
+    },
     scrollContainer: {
         padding: 20,
         flexGrow: 1,

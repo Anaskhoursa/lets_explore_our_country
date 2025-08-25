@@ -10,7 +10,7 @@ export const useSocketStore = create((set, get) => ({
         const existing = get().socket;
         if (existing) return;
 
-        const socket = io('http://192.168.1.8:3001', {
+        const socket = io('http://10.249.1.23:3001', {
             withCredentials: true,
             autoConnect: false,
         });

@@ -25,6 +25,12 @@ const VersionSelector = () => {
         >
           V2
         </button>
+        <button
+          className={version === 'V3' ? 'active' : ''}
+          onClick={() => handleSelect('V3')}
+        >
+          V3
+        </button>
       </div>
       {version && <p style={{color:'black'}}>Current Version: <strong>{version}</strong></p>}
     </div>

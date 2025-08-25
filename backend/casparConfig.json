@@ -54,5 +54,14 @@
     "layer2": "10",
     "path": "VS",
     "loop": true
+  },
+  "alldetails": {
+    "channel": 1,
+    "layer": "10",
+    "channel2": 2,
+    "layer2": "10",
+    "path": "all6",
+    "loop": true
   }
+
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSocket } from "../socketWrapper";
 import "./ManageGame.css";
-import { decrementScore, getAll, getQuestions, incrementScore, play40sec, playLogo, playVS, resetAll, showBackground, showBackground2, showCaspar, showCaspar2, showCorrectOption, showCorrectOption2, showScore, showScore2, stopBackground, stopBackground2, stopLogo, stopQ, stopQ2, stopScore, stopScore2, stopVS } from "../api/context";
+import { decrementScore, getAll, getQuestions, incrementScore, play40sec, playAllDetails, playCategory, playLogo, playVS, resetAll, showBackground, showBackground2, showCaspar, showCaspar2, showCorrectOption, showCorrectOption2, showScore, showScore2, stopAllDetails, stopBackground, stopBackground2, stopLogo, stopQ, stopQ2, stopScore, stopScore2, stopVS } from "../api/context";
 import { QueryClient, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ManageGame = () => {
@@ -35,6 +35,11 @@ const ManageGame = () => {
         Array(5).fill().map(() => ({ winner: [], loser: [] }))
     );
     const [version, setVersion] = useState(localStorage.getItem('version') || '');
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [categorySelection, setCategorySelection] = useState(false);
+ 
+    const [detailsPlayed, setDetailsPlayed] = useState(false);
 
 
 
@@ -53,8 +58,15 @@ const ManageGame = () => {
     const users = data?.users || [];
     const questions = data?.questions || [];
 
-    const currentQuestionId = questions[qIndex]?.id;
+    const currentQuestionId = questions.filter(q => selectedCategory ? q.category === selectedCategory : q)[qIndex]?.id;
     const currentAnswers = userAnswers[currentQuestionId] || [];
+
+
+    useEffect(() => {
+        const stored = JSON.parse(localStorage.getItem("categories")) || [];
+        setCategories(stored);
+    }, []);
+
 
     useEffect(() => {
         if (!socket) return;
@@ -425,6 +437,10 @@ const ManageGame = () => {
         }
     }, [data]);
 
+    const handleSelect = (e) => {
+        setSelectedCategory(e.target.value);
+    };
+
 
 
 
@@ -565,8 +581,17 @@ const ManageGame = () => {
     };
     const handleNextClick = (eventName) => {
         socket.emit(eventName);
-        setQIndex((prevIndex) => prevIndex !== questions.length - 1 ? prevIndex + 1 : prevIndex);
-        startCountdown();
+
+        if (qIndex === questions.filter(q => selectedCategory ? q.category === selectedCategory : q).length - 1) {
+            setCategorySelection(true)
+            setQIndex(null)
+
+        }
+        else {
+            setQIndex((prevIndex) => prevIndex !== questions.filter(q => selectedCategory ? q.category === selectedCategory : q).length - 1 ? prevIndex + 1 : prevIndex);
+
+            startCountdown();
+        }
     };
     const handleResetClick = (eventName) => {
         if (qIndex !== null) {
@@ -724,8 +749,10 @@ const ManageGame = () => {
 
                     {/* <button onClick={() => handleReturnClick('return_question')} disabled={!buttonsEnabled || qIndex === null}>Return</button> */}
                     <button onClick={() => handleStopClick('stop_game')} disabled={qIndex === null}>Stop</button>
-                    <button style={{display: version === 'V1' ? 'none' : ''}} onClick={() => { socket.emit('round_time'); setIsRound(true), setIsChallenge(false) }} >Defi</button>
-                    <button style={{display: version === 'V1' ? 'none' : ''}} onClick={() => { socket.emit('between_round_time');; setIsRound(false), setIsChallenge(true) }} >Face a Face </button>
+                    <button onClick={() => setCategorySelection(prev => !prev)} style={{ display: version !== 'V3' ? 'none' : '' }} >Category</button>
+
+                    <button style={{ display: version === 'V1' || version === 'V3' ? 'none' : '' }} onClick={() => { socket.emit('round_time'); setIsRound(true), setIsChallenge(false) }} >Defi</button>
+                    <button style={{ display: version === 'V1' || version === 'V3' ? 'none' : '' }} onClick={() => { socket.emit('between_round_time');; setIsRound(false), setIsChallenge(true) }} >Face a Face </button>
                     <button style={{ display: isChallenge || isRound ? '' : 'none' }} onClick={() => { setIsRound(false), setIsChallenge(false) }} >Return</button>
 
 
@@ -821,9 +848,16 @@ const ManageGame = () => {
 
 
                 <div className="game-panel">
-                    {!isChallenge && !isRound && <div className="realtime-questions">
+                    {categorySelection && <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: "center" }} className="realtime-questions">
+                        {categories.map(c =>
+                            <button className="category-btn" onClick={() => { setSelectedCategory(c); socket.emit('update_category', c); setCategorySelection(false); playCategory({ category: c, number: 3 }) }}>{c}</button>
+                        )}
+
+                    </div>}
+                    {!isChallenge && !isRound && !categorySelection && <div className="realtime-questions">
+
                         <div className="question-buttons">
-                            {questions.map((question, index) => (
+                            {questions.filter(q => selectedCategory ? q.category === selectedCategory : q).map((question, index) => (
                                 <button
                                     key={question.id}
                                     className="circle-btn"
@@ -839,9 +873,65 @@ const ManageGame = () => {
                         {qIndex !== null ? <div className="question-box">
                             <div className="countdown-timer">Time Left: {timeLeft}s</div>
                             <button className="circle-btn" style={{ padding: '10px', width: '3.5rem', borderRadius: '5px' }} onClick={() => setOptionsVisible(prev => !prev)}>{optionsVisible ? 'Hide' : 'Show'}</button>
-                            <h3 className="question-text" style={{ textAlign: '' }} >{questions[qIndex]?.question}</h3>
+                            {qIndex !== null && !detailsPlayed && (
+                                <button
+                                    className="circle-btn"
+                                    style={{
+                                       marginTop: '10px', padding: '10px', width: 'auto', borderRadius: '5px', display: version === 'V3' ? "flex" : "none",
+                                    }}
+                                    onClick={() => {
+                                        setDetailsPlayed(true);
+                                        const playerDetails = currentAnswers.map(userAnswer => {
+                                            const user = liveUsers.find(u => u.name === userAnswer.name);
+                                            const isCorrect = questions.find(q => q.id === currentQuestionId)?.answers
+                                                .find(ans => ans.text.trim() === userAnswer.answer)?.isCorrect || false;
+
+                                            return {
+                                                name: userAnswer.name,
+                                                score: user?.score || 0,
+                                                isCorrect: userAnswer.answer === 'no answer' ? null : isCorrect
+                                            };
+                                        });
+
+                                        // Send to playall API function
+                                        playAllDetails(playerDetails);
+                                    }}
+                                >
+                                    Play Each Player Details
+                                </button>
+                                
+                            )}
+                            {qIndex !== null && detailsPlayed &&  (
+                                <button
+                                    className="circle-btn"
+                                    style={{
+                                        padding: '10px', width: 'auto', borderRadius: '5px', marginLeft: '10px', display: version === 'V3' ? "flex" : "none",
+                                    }}
+                                    onClick={() => {
+                                        setDetailsPlayed(false);
+                                        const playerDetails = currentAnswers.map(userAnswer => {
+                                            const user = liveUsers.find(u => u.name === userAnswer.name);
+                                            const isCorrect = questions.find(q => q.id === currentQuestionId)?.answers
+                                                .find(ans => ans.text.trim() === userAnswer.answer)?.isCorrect || false;
+
+                                            return {
+                                                name: userAnswer.name,
+                                                score: user?.score || 0,
+                                                isCorrect: userAnswer.answer === 'no answer' ? null : isCorrect
+                                            };
+                                        });
+
+                                        // Send to playall API function
+                                        stopAllDetails(playerDetails);
+                                    }}
+                                >
+                                    Stop Each Player Details
+                                </button>
+                                
+                            )}
+                            <h3 className="question-text" style={{ textAlign: '' }} >{questions.filter(q => selectedCategory ? q.category === selectedCategory : q)[qIndex]?.question}</h3>
                             <ul className="answers-list" style={{ display: optionsVisible ? 'block' : 'none' }}>
-                                {questions[qIndex]?.answers.map((option, idx) => (
+                                {questions.filter(q => selectedCategory ? q.category === selectedCategory : q)[qIndex]?.answers.map((option, idx) => (
                                     <li key={idx} className="answer-option" style={{ textAlign: '', backgroundColor: option.isCorrect ? 'green' : "red" }}>{option.text}</li>
                                 ))}
                             </ul>
